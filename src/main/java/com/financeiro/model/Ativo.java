@@ -36,6 +36,19 @@ public abstract class Ativo {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ativo ativo = (Ativo) o;
+        return ticker.equals(ativo.ticker);
+    }
+
+    @Override
+    public int hashCode() {
+        return ticker.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "Ativo{" +
                 "ticker='" + ticker + '\'' +
