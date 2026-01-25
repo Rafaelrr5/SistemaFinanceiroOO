@@ -3,6 +3,7 @@ package com.financeiro.service;
 import com.financeiro.model.Carteira;
 import com.financeiro.model.Ativo;
 import com.financeiro.model.Investidor;
+import com.financeiro.model.ItemCarteira;
 import java.util.Map;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class RelatorioGerador {
         
         relatorio.append("INVESTIDOR:\n");
         relatorio.append(String.format("  Nome: %s\n", investidor.getNome()));
-        relatorio.append(String.format("  CPF: %s\n", investidor.getCpf()));
+        relatorio.append(String.format("  CPF/CNPJ: %s\n", investidor.getIdentificador()));
         relatorio.append(String.format("  Email: %s\n", investidor.getEmail()));
         relatorio.append(String.format("  Telefone: %s\n\n", investidor.getTelefone()));
         
@@ -39,17 +40,19 @@ public class RelatorioGerador {
         relatorio.append("-".repeat(60)).append("\n");
         
         double valorTotalCarteira = 0;
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
+        // Corrigido para iterar sobre ItemCarteira
+        for (Map.Entry<Ativo, com.financeiro.model.ItemCarteira> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
-            int quantidade = entry.getValue();
-            double valorTotal = quantidade * ativo.getPreco();
+            com.financeiro.model.ItemCarteira item = entry.getValue();
+            double quantidade = item.getQuantidade(); 
+            double valorTotal = quantidade * ativo.getValorEmReais(); // Preço * Fator
             valorTotalCarteira += valorTotal;
             
-            relatorio.append(String.format("%-10s %-30s %-8d R$ %-10.2f R$ %-10.2f\n",
+            relatorio.append(String.format("%-10s %-30s %-8.2f R$ %-10.2f R$ %-10.2f\n",
                 ativo.getTicker(), 
                 ativo.getNome().length() > 30 ? ativo.getNome().substring(0, 27) + "..." : ativo.getNome(),
                 quantidade,
-                ativo.getPreco(),
+                ativo.getValorEmReais(),
                 valorTotal));
         }
         
@@ -122,7 +125,7 @@ public class RelatorioGerador {
         
         json.append("  \"investidor\": {\n");
         json.append(String.format("    \"nome\": \"%s\",\n", investidor.getNome()));
-        json.append(String.format("    \"cpf\": \"%s\",\n", investidor.getCpf()));
+        json.append(String.format("    \"identificador\": \"%s\",\n", investidor.getIdentificador()));
         json.append(String.format("    \"email\": \"%s\",\n", investidor.getEmail()));
         json.append(String.format("    \"telefone\": \"%s\"\n", investidor.getTelefone()));
         json.append("  },\n");
@@ -135,10 +138,11 @@ public class RelatorioGerador {
         double valorTotalCarteira = 0;
         json.append("    \"ativos\": [\n");
         boolean primeiroAtivo = true;
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
-            int quantidade = entry.getValue();
-            double valorTotal = quantidade * ativo.getPreco();
+            ItemCarteira item = entry.getValue();
+            double quantidade = item.getQuantidade();
+            double valorTotal = quantidade * ativo.getValorEmReais();
             valorTotalCarteira += valorTotal;
             
             if (!primeiroAtivo) {
@@ -149,9 +153,10 @@ public class RelatorioGerador {
             json.append("      {\n");
             json.append(String.format("        \"ticker\": \"%s\",\n", ativo.getTicker()));
             json.append(String.format("        \"nome\": \"%s\",\n", ativo.getNome()));
-            json.append(String.format("        \"quantidade\": %d,\n", quantidade));
-            json.append(String.format("        \"precoUnitario\": %.2f,\n", ativo.getPreco()));
-            json.append(String.format("        \"valorTotal\": %.2f\n", valorTotal));
+            json.append(String.format("        \"quantidade\": %.2f,\n", quantidade));
+            json.append(String.format("        \"precoUnitario\": %.2f,\n", ativo.getValorEmReais()));
+            json.append(String.format("        \"valorGasto\": %.2f,\n", item.getValorTotalGasto()));
+            json.append(String.format("        \"valorAtual\": %.2f\n", valorTotal));
             json.append("      }");
         }
         json.append("\n    ],\n");

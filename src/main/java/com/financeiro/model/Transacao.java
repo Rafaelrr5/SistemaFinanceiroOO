@@ -3,20 +3,40 @@ package com.financeiro.model;
 import java.time.LocalDateTime;
 
 public class Transacao {
+    private String id;
     private TipoTransacao tipo;
     private LocalDateTime data;
     private Ativo ativo;
     private double quantidade;
     private double preco;
     private double valorTotal;
+    private String instituicao;
 
-    public Transacao(TipoTransacao tipo, LocalDateTime data, Ativo ativo, double quantidade, double preco) {
+    public Transacao(String id, TipoTransacao tipo, LocalDateTime data, Ativo ativo, double quantidade, double preco, String instituicao) {
+        this.id = id;
         this.tipo = tipo;
         this.data = data;
         this.ativo = ativo;
         this.quantidade = quantidade;
         this.preco = preco;
         this.valorTotal = quantidade * preco;
+        this.instituicao = instituicao;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getInstituicao() {
+        return instituicao;
+    }
+
+    public void setInstituicao(String instituicao) {
+        this.instituicao = instituicao;
     }
 
     public TipoTransacao getTipo() {
@@ -51,9 +71,6 @@ public class Transacao {
         this.quantidade = quantidade;
         this.valorTotal = this.quantidade * this.preco;
     }
-        this.quantidade = quantidade;
-        this.valorTotal = this.quantidade * this.preco;
-    }
 
     public double getPreco() {
         return preco;
@@ -71,11 +88,11 @@ public class Transacao {
     @Override
     public String toString() {
         return "Transacao{" +
-                "tipo=" + tipo +
+                "id='" + id + '\'' +
+                ", tipo=" + tipo +
                 ", data=" + data +
                 ", ativo=" + (ativo != null ? ativo.getNome() : "null") +
-                ", quantidade=" + quantidade +
-                ", preco=" + preco +
+                ", instituicao='" + instituicao + '\'' +
                 ", valorTotal=" + valorTotal +
                 '}';
     }
