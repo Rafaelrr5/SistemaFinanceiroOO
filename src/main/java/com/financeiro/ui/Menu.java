@@ -183,15 +183,27 @@ public class Menu {
     }
     
     private void editarAtivo() {
-        System.out.print("Ticker: "); String ticker = scanner.nextLine();
+        System.out.print("Ticker do ativo a editar: "); String ticker = scanner.nextLine();
         Ativo a = ativoRepository.buscarPorTicker(ticker);
         if(a != null) {
-            System.out.print("Novo preço: ");
-            double p = scanner.nextDouble(); scanner.nextLine();
-            a.setPreco(p);
-            System.out.println("Preço atualizado.");
+            System.out.println("Ativo encontrado: " + a.getNome() + " - Preço: " + a.getPreco());
+            System.out.print("Novo nome (Enter para manter): "); 
+            String novoNome = scanner.nextLine();
+            if (!novoNome.isEmpty()) {
+                a.setNome(novoNome);
+            }
+            
+            System.out.print("Novo preço (0 para manter): ");
+            double novoPreco = scanner.nextDouble(); scanner.nextLine();
+            if (novoPreco > 0) {
+                a.setPreco(novoPreco);
+            } else if (novoPreco < 0) {
+                System.out.println("Preço inválido (negativo). Mantido o anterior.");
+            }
+            
+            System.out.println("Ativo atualizado com sucesso!");
         } else {
-            System.out.println("Não encontrado.");
+            System.out.println("Ativo não encontrado com ticker: " + ticker);
         }
     }
     
@@ -232,21 +244,42 @@ public class Menu {
         
         try {
             System.out.print("Nome: "); String nome = scanner.nextLine();
+            if (nome == null || nome.trim().isEmpty()) {
+                throw new com.financeiro.exception.RegraNegocioException("Nome não pode ser vazio.");
+            }
+            
             System.out.print("ID (CPF/CNPJ): "); String id = scanner.nextLine();
+            if (id == null || id.trim().isEmpty()) {
+                throw new com.financeiro.exception.RegraNegocioException("CPF/CNPJ não pode ser vazio.");
+            }
+            
             System.out.print("Telefone: "); String tel = scanner.nextLine();
             System.out.print("Email: "); String email = scanner.nextLine();
-            System.out.print("Endereço: "); String end = scanner.nextLine();
+            System.out.print("Data de Nascimento (dd/MM/yyyy): "); 
+            String dataNascStr = scanner.nextLine();
+            LocalDate dataNasc;
+            try {
+                dataNasc = LocalDate.parse(dataNascStr, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            } catch (Exception e) {
+                System.out.println("Data inválida. Usando data atual.");
+                dataNasc = LocalDate.now();
+            }
+            System.out.print("Endereço completo: "); String end = scanner.nextLine();
             System.out.print("Patrimonio: "); double pat = scanner.nextDouble(); scanner.nextLine();
+            
+            if (pat < 0) {
+                throw new com.financeiro.exception.RegraNegocioException("Patrimônio não pode ser negativo.");
+            }
             
             Investidor novo;
             if (t == 1) {
                 System.out.println("Perfil: 1-CONSERVADOR, 2-MODERADO, 3-ARROJADO");
                 int p = scanner.nextInt(); scanner.nextLine();
                 PerfilInvestidor perfil = PerfilInvestidor.values()[p-1];
-                novo = new PessoaFisica(nome, id, tel, email, LocalDate.now(), end, pat, perfil);
+                novo = new PessoaFisica(nome, id, tel, email, dataNasc, end, pat, perfil);
             } else {
                 System.out.print("Razão Social: "); String razao = scanner.nextLine();
-                novo = new Institucional(nome, id, tel, email, LocalDate.now(), end, pat, razao);
+                novo = new Institucional(nome, id, tel, email, dataNasc, end, pat, razao);
             }
             investidorService.cadastrar(novo);
             System.out.println("Investidor cadastrado!");
