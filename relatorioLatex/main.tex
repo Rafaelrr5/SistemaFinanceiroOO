@@ -1,0 +1,253 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage[top=3cm, bottom=3cm, left=3cm, right=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{float}
+
+\title{\textbf{Relatório do Trabalho Prático 2: Árvores B e Compressão de Dados}}
+\author{
+    \textbf{Disciplina:} DCC012 - Estrutura de Dados II \\
+    \textbf{Professora:} Barbara Quintela
+}
+\date{Janeiro de 2026}
+
+\begin{document}
+
+% ==================== CAPA ====================
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Large \textbf{Universidade Federal de Juiz de Fora}}\\[0.3cm]
+    {\large Instituto de Ciências Exatas}\\[0.2cm]
+    {\large Departamento de Ciência da Computação}\\[2cm]
+    
+    \rule{\textwidth}{1pt}\\[0.5cm]
+    {\LARGE \textbf{Trabalho Prático 2}}\\[0.3cm]
+    {\Large Árvores B e Compressão de Dados}\\[0.5cm]
+    \rule{\textwidth}{1pt}\\[2cm]
+    
+    {\large \textbf{DCC012 - Estrutura de Dados II}}\\[0.5cm]
+    {\large Professora: Barbara Quintela}\\[3cm]
+    
+    \textbf{Integrantes do Grupo:}\\[0.5cm]
+    \begin{tabular}{l}
+        Davi Grossi S. de Souza (202165023A) \\
+        Leandro Fortunato (202476031) \\
+        Rafael Amaral Rodrigues (202165123AB) \\
+        Rafael Rocha Ribeiro (202365131A) \\
+        Yan Dias Ferreira (202335037) \\
+    \end{tabular}
+    
+    \vfill
+    
+    {\large Juiz de Fora -- MG}\\
+    {\large Janeiro de 2026}
+    
+\end{titlepage}
+% ==================== FIM DA CAPA ====================
+
+\section{Identificação e Detalhamento das Atividades}
+
+Abaixo listam-se os integrantes do grupo e suas respectivas responsabilidades na implementação desta etapa.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Integrante (Matrícula)} & \textbf{Atividades Realizadas} \\ \midrule
+        Rafael Rocha Ribeiro (202365131A) & Core da Árvore B (Inserção e Split) e Testes. \\ \midrule
+        Leandro Fortunato (202476031) & Integração, Busca Composta, CLI e Makefile. \\ \midrule
+        Yan Dias Ferreira (202335037) & Algoritmo Huffman (Implementação e Análise). \\ \midrule
+        Rafael Amaral Rodrigues (202165123AB) & Algoritmo LZ77 (Implementação e Análise). \\ \midrule
+        Davi Grossi S. de Souza (202165023A) & Algoritmo LZW e (Implementação e Análise). \\ \bottomrule
+    \end{tabular}
+\end{table}
+
+\noindent \textbf{Repositório do Projeto:} O código fonte completo pode ser acessado em: \\
+\url{https://github.com/Rafaelrr5/TrabED2}
+
+\section{Decisões de Implementação}
+
+O sistema foi desenvolvido em linguagem \textbf{C} padrão (C11), utilizando manipulação direta de arquivos binários e gerenciamento manual de memória, sem dependência de bibliotecas externas, conforme exigido na especificação.
+
+\subsection{Árvore B (Estruturas Balanceadas)}
+Para a indexação dos registros, implementou-se uma Árvore B cujos nós são persistidos em disco através de um arquivo dedicado (\texttt{btree.idx}).
+
+\begin{itemize}
+    \item \textbf{Estrutura do Nó:} Cada nó armazena um vetor de chaves (\texttt{keys[]}) do tipo \texttt{int} representando o \texttt{app\_id}, um vetor de posições (\texttt{data\_pos[]}) do tipo \texttt{long long} que guarda o \textit{offset} do registro no arquivo \texttt{reviews.bin}, e um vetor de índices de filhos (\texttt{children[]}).
+    
+    \item \textbf{Chave Composta:} A busca por \texttt{(app\_id, author\_steamid)} é realizada em duas fases: primeiro a árvore localiza candidatos pelo \texttt{app\_id} (chave primária ordenada na árvore) e, em seguida, o sistema acessa o arquivo de dados para confirmar o \texttt{author\_steamid}, otimizando o número de leituras em disco.
+    
+    \item \textbf{Persistência:} Utiliza-se \texttt{fseek} e \texttt{fwrite/fread} para serialização dos nós. O cabeçalho (\texttt{BTreeHeader}) armazena a ordem da árvore, o índice da raiz e o próximo índice livre, permitindo reconstrução eficiente ao reabrir o arquivo.
+    
+    \item \textbf{Split:} A operação de divisão de nó (\texttt{split\_child}) segue a estratégia clássica: promove a chave mediana ao pai e divide as chaves restantes entre o nó original e um novo nó.
+\end{itemize}
+
+\subsection{Algoritmos de Compressão}
+Implementaram-se três estratégias distintas para a compressão do arquivo textual de reviews (\texttt{reviewsOrig.txt}):
+
+\begin{enumerate}
+    \item \textbf{Huffman:} Algoritmo estatístico que constrói uma árvore binária a partir da frequência de caracteres. Gera um dicionário de códigos de tamanho variável onde caracteres mais frequentes recebem códigos menores. Os bits são \textbf{empacotados em bytes} antes da escrita no arquivo binário de saída, garantindo compressão real.
+    
+    \item \textbf{LZ77:} Algoritmo baseado em dicionário deslizante. Utiliza uma janela de busca de 4096 bytes (\texttt{TAM\_DICIONARIO}) e um \textit{lookahead buffer} de 15 bytes (\texttt{TAM\_LOOKAHEAD}). Cada token é serializado em \textbf{formato binário} como uma tripla de 4 bytes: \texttt{(offset: 2 bytes, length: 1 byte, next\_char: 1 byte)}.
+    
+    \item \textbf{LZW:} Algoritmo baseado em dicionário dinâmico. Inicia com uma tabela contendo
+os 256 caracteres ASCII (posições 0-255) e aprende novos padrões durante a 
+compressão (posições 256-4095), emitindo códigos de tamanho fixo (2 bytes/short).
+Não requer armazenamento explícito do dicionário no arquivo comprimido, pois
+o descompressor reconstrói o dicionário automaticamente durante a descompressão.
+Opera em dois modos: strings em memória (códigos formatados como "<123>") e 
+arquivos binários (códigos como short). Complexidade O(n×d) com busca linear
+no dicionário.
+\end{enumerate}
+
+\subsection{Pipeline de Compressão}
+O fluxo de dados segue a especificação:
+\begin{enumerate}
+    \item \texttt{reviews.bin} (binário original) $\rightarrow$ Função \texttt{create\_txt\_from\_binary()} $\rightarrow$ \texttt{reviewsOrig.txt}
+    \item \texttt{reviewsOrig.txt} $\rightarrow$ Algoritmo de compressão $\rightarrow$ \texttt{reviewsComp.bin}
+    \item \texttt{reviewsComp.bin} $\rightarrow$ Algoritmo de descompressão $\rightarrow$ \texttt{reviewsDesc.txt}
+\end{enumerate}
+
+\section{Análise de Resultados}
+
+\subsection{Desempenho da Árvore B}
+Os testes foram realizados com a inserção de $N=1.000.000$ registros e busca de $B=100$ chaves, executando $M=3$ iterações para cada configuração.
+
+\begin{table}[H]
+    \centering
+    \caption{Comparativo de Desempenho da Árvore B (Médias de 3 execuções)}
+    \begin{tabular}{@{}lccc@{}}
+        \toprule
+        \textbf{Ordem ($m$)} & \textbf{Tempo Inserção (s)} & \textbf{Tempo Busca (s)} & \textbf{Média Comparações} \\ \midrule
+        $m=20$  & 7,2257 & 0,001129 & 30,53 \\
+        $m=200$ & 6,1514 & 0,000835 & 133,82 \\ \bottomrule
+    \end{tabular}
+    \label{tab:btree}
+\end{table}
+
+
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+            enlarge x limits=0.5,
+            ylabel={Tempo de Inserção (s)},
+            symbolic x coords={m=20, m=200},
+            xtick=data,
+            nodes near coords,
+            nodes near coords align={vertical},
+            ymin=0, ymax=9,
+            bar width=1.5cm,
+            width=9cm,
+            height=6cm,
+            title={Tempo de Inserção ($N=1.000.000$)},
+            ymajorgrids=true,
+            grid style=dashed,
+        ]
+            \addplot[fill=orange!60, draw=black] coordinates {
+                (m=20, 7.2257)
+                (m=200, 6.1514)
+            };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Comparação do tempo de inserção entre diferentes ordens da Árvore B.}
+\end{figure}
+
+\noindent \textbf{Análise:} Conforme os dados obtidos, a árvore de ordem maior ($m=200$) apresentou um tempo de inserção inferior (6,15s vs 7,22s) e uma busca mais rápida (0,0008s). Isso confirma a expectativa teórica de que uma ordem maior reduz a altura da árvore ($h \approx \log_m N$), resultando em menos acessos a disco. Em contrapartida, observou-se um aumento significativo na média de comparações (de 30,53 para 133,82), o que reflete o maior esforço computacional necessário para realizar a busca binária dentro de páginas contendo mais chaves.
+
+\subsection{Comparativo de Compressão}
+Abaixo apresentam-se as médias obtidas após $M=3$ execuções de cada algoritmo, utilizando $N=5000$ registros exportados para \texttt{reviewsOrig.txt}.
+
+\begin{table}[H]
+    \centering
+    \caption{Taxas de Compressão e Tempos de Execução}
+    \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \textbf{Algoritmo} & \textbf{Original (bytes)} & \textbf{Comprimido (bytes)} & \textbf{Taxa (\%)} & \textbf{Tempo (s)} \\ \midrule
+        Huffman & 223234 & 97573  & 43,71\%  & 1,2266 \\
+        LZ77    & 223234 & 132976 & 59,57\%  & 0,6098 \\
+        LZW     & 223234 & 104488 & 46,81\%  & 1,8166 \\ \bottomrule
+    \end{tabular}
+    \label{tab:compressao}
+\end{table}
+
+
+
+\textbf{\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+            enlarge x limits=0.25,
+            legend style={at={(0.5,-0.15)}, anchor=north, legend columns=-1},
+            ylabel={Taxa de Compressão (\%)},
+            symbolic x coords={Huffman, LZ77, LZW},
+            xtick=data,
+            nodes near coords,
+            nodes near coords align={vertical},
+            ymin=0, ymax=100,
+            bar width=1cm,
+            width=10cm,
+            height=7cm,
+            title={Eficiência de Compressão ($N=5000$)},
+            ymajorgrids=true,
+            grid style=dashed,
+        ]
+            \addplot[fill=blue!40, draw=black] coordinates {
+                (Huffman, 43.71)
+                (LZ77, 59.57)
+                (LZW, 46.81)
+            };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Comparativo das taxas de compressão.}
+    \label{fig:grafico_comp}
+\end{figure}}
+
+\noindent \textbf{Análise:} O algoritmo \textbf{Huffman} apresentou a melhor taxa de compressão (\textbf{43,71\%}), reduzindo o arquivo original em aproximadamente \textbf{56,29\%}. Isso se deve à natureza estatística do algoritmo, que atribui códigos de comprimento variável baseados na frequência de ocorrência de cada símbolo, eliminando redundâncias a nível de bit de forma global no arquivo. Em contrapartida, o \textbf{LZ77} foi o mais rápido (\textbf{0,6098s}), sendo ideal para cenários onde a latência é crítica.
+
+\vspace{0.5cm}
+
+\noindent A diferença de desempenho pode ser explicada pela complexidade algorítmica: Huffman requer duas passagens (construção da tabela de frequências e codificação), enquanto LZ77 opera em uma única passagem sobre os dados, utilizando uma janela deslizante para encontrar sequências repetidas, o que resulta em um processamento temporalmente mais eficiente, apesar de uma taxa de compressão ligeiramente inferior à do Huffman para este volume de dados.
+
+\section{Declaração sobre uso de IA}
+
+\textit{}
+
+Durante a realização deste trabalho, utilizamos \textbf{GitHub Copilot (Claude Sonnet 4)} com a finalidade de \textbf{auxiliar na correção de bugs nos algoritmos de compressão (conversão de bits para bytes), otimização do Makefile, e revisão deste relatório}.
+
+Após a utilização, o conteúdo foi revisado e editado por \textbf{Leandro Fortunato, Rafael Rocha Ribeiro, Yan Dias Ferreira, Rafael Amaral Rodrigues e Davi Grossi S. de Souza}, e assumimos total responsabilidade por todas as informações apresentadas neste relatório.
+
+\section{Referências Bibliográficas}
+
+\renewcommand{\refname}{} 
+\vspace{-1cm}
+\begin{thebibliography}{9}
+
+\bibitem{Cormen}
+CORMEN, Thomas H. et al. \textit{Introduction to Algorithms}. 3rd Edition. MIT Press, 2009.
+
+\bibitem{Salomon}
+SALOMON, David. \textit{Data Compression: The Complete Reference}. 3rd Edition. Springer, 2004.
+
+\bibitem{Dataset}
+CRAINBRAMP. \textit{Steam Dataset 2025: Multi-Modal Gaming Analytics}. Kaggle. Disponível em: \url{https://www.kaggle.com/datasets/crainbramp/steam-dataset-2025-multi-modal-gaming-analytics}. Acesso em: jan. 2026.
+
+\bibitem{C11}
+ISO/IEC 9899:2011. \textit{Information technology — Programming languages — C}. International Organization for Standardization, 2011.
+
+\end{thebibliography}
+
+\end{document}
