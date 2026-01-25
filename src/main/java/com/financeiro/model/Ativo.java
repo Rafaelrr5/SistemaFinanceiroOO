@@ -59,18 +59,24 @@ public abstract class Ativo {
         return this.preco * this.fatorConversao;
     }
 
+    /**
+     * Verifica se o ativo é de renda fixa.
+     * Sobrescrito nas subclasses quando necessário.
+     */
     public boolean isRendaFixa() {
-        return this instanceof Tesouro;
+        return false; // Por padrão, ativos são de renda variável
     }
 
     public boolean isRendaVariavel() {
         return !isRendaFixa();
     }
 
+    /**
+     * Verifica se o ativo é nacional (negociado em Real).
+     * Sobrescrito nas subclasses quando necessário.
+     */
     public boolean isNacional() {
-        // Stock e Criptoativo são internacionais
-        // Acao, FII, Tesouro são nacionais
-        return !(this instanceof Stock) && !(this instanceof Criptoativo);
+        return this.fatorConversao == 1.0; // Se fator é 1.0, é nacional
     }
 
     public boolean isInternacional() {

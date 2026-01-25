@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AtivoRepository {
+public class AtivoRepository implements Repositorio<Ativo> {
     private List<Ativo> ativos = new ArrayList<>();
 
     public AtivoRepository() {
@@ -18,6 +18,32 @@ public class AtivoRepository {
         carregarTesouros();
     }
 
+    @Override
+    public void salvar(Ativo ativo) {
+        if (ativo == null) return;
+        Ativo existente = buscarPorId(ativo.getTicker());
+        if (existente != null) {
+            ativos.remove(existente);
+        }
+        ativos.add(ativo);
+    }
+
+    @Override
+    public List<Ativo> listarTodos() {
+        return new ArrayList<>(ativos);
+    }
+
+    @Override
+    public Ativo buscarPorId(String ticker) {
+        return buscarPorTicker(ticker);
+    }
+
+    @Override
+    public void excluir(Ativo ativo) {
+        ativos.remove(ativo);
+    }
+
+    // Métodos específicos mantidos
     private void carregarAcoes() {
         try (BufferedReader br = new BufferedReader(new FileReader("acao.csv"))) {
             String linha;
@@ -186,27 +212,23 @@ public class AtivoRepository {
         }
     }
 
-    public List<Ativo> listarTodos() {
-        return new ArrayList<>(ativos);
-    }
-
     public Ativo buscarPorTicker(String ticker) {
         return ativos.stream()
                 .filter(a -> a.getTicker().equalsIgnoreCase(ticker))
                 .findFirst()
                 .orElse(null);
     }
-
+    
+    // Alias para manter compatibilidade ou pode ser removido refatorando quem chama
     public void adicionarAtivo(Ativo ativo) {
-        if (ativo != null && buscarPorTicker(ativo.getTicker()) == null) {
-            ativos.add(ativo);
-        }
+        salvar(ativo);
     }
 
     public boolean removerAtivo(String ticker) {
-        Ativo ativo = buscarPorTicker(ticker);
+        Ativo ativo = buscarPorId(ticker);
         if (ativo != null) {
-            return ativos.remove(ativo);
+            excluir(ativo);
+            return true;
         }
         return false;
     }
