@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.financeiro.model.Cotacao;
+import com.financeiro.model.ItemCarteira;
 
 public class AnaliseService {
     private TransacaoRepository transacaoRepository;
@@ -25,12 +26,13 @@ public class AnaliseService {
         double investido = 0;
         double atual = 0;
 
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
-            int quantidade = entry.getValue();
+            ItemCarteira item = entry.getValue();
+            double quantidade = item.getQuantidade();
 
-            investido += quantidade * buscarPrecoMedioCompra(ativo);
-            atual += quantidade * ativo.getPreco();
+            investido += item.getValorTotalGasto();
+            atual += quantidade * ativo.getValorEmReais();
         }
 
         if (investido == 0)
@@ -56,13 +58,13 @@ public class AnaliseService {
     public Map<String, Double> calcularDesempenhoPorAtivo(Carteira carteira) {
         Map<String, Double> desempenho = new java.util.HashMap<>();
 
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
-            int quantidade = entry.getValue();
+            ItemCarteira item = entry.getValue();
+            double quantidade = item.getQuantidade();
 
-            double precoMedio = buscarPrecoMedioCompra(ativo);
-            double valorAtual = quantidade * ativo.getPreco();
-            double valorInvestido = quantidade * precoMedio;
+            double valorAtual = quantidade * ativo.getValorEmReais();
+            double valorInvestido = item.getValorTotalGasto();
 
             double rentabilidade = valorInvestido > 0 ? ((valorAtual - valorInvestido) / valorInvestido) * 100 : 0;
 
@@ -84,9 +86,10 @@ public class AnaliseService {
     private double simularValorCarteiraNaData(Carteira carteira, LocalDate data) {
         double valor = 0;
 
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
-            int quantidade = entry.getValue();
+            ItemCarteira item = entry.getValue();
+            double quantidade = item.getQuantidade();
 
             double precoHistorico = buscarPrecoHistorico(ativo.getTicker(), data);
             valor += quantidade * precoHistorico;

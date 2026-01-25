@@ -25,12 +25,12 @@ public class CarteiraService {
                 .orElseThrow(() -> new Exception("Carteira não encontrada: " + nome));
     }
 
-    public void adicionarAtivo(Carteira carteira, Ativo ativo, int quantidade) {
-        carteira.adicionarAtivo(ativo, quantidade);
+    public void adicionarAtivo(Carteira carteira, Ativo ativo, double quantidade, double precoCompra) {
+        carteira.adicionarAtivo(ativo, quantidade, precoCompra);
         // Em um cenário real com banco de dados, chamaria repository.salvar(carteira) para atualizar
     }
 
-    public void removerAtivo(Carteira carteira, Ativo ativo, int quantidade) {
+    public void removerAtivo(Carteira carteira, Ativo ativo, double quantidade) {
         carteira.removerAtivo(ativo, quantidade);
         // Em um cenário real com banco de dados, chamaria repository.salvar(carteira) para atualizar
     }

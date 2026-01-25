@@ -18,7 +18,7 @@ public class TransacaoService {
         this.validacaoService = validacaoService;
     }
 
-    public void comprar(Investidor investidor, Ativo ativo, double quantidade, double preco) throws Exception {
+    public void comprar(Investidor investidor, Ativo ativo, double quantidade, double preco, String instituicao) throws Exception {
         validacaoService.validarQuantidadePositiva(quantidade);
         validacaoService.validarPermissaoInvestimento(investidor, ativo);
         
@@ -29,11 +29,12 @@ public class TransacaoService {
         carteira.setSaldo(carteira.getSaldo() - valorTotal);
         carteira.adicionarAtivo(ativo, quantidade, preco);
 
-        Transacao transacao = new Transacao(TipoTransacao.COMPRA, LocalDateTime.now(), ativo, quantidade, preco);
+        String id = java.util.UUID.randomUUID().toString();
+        Transacao transacao = new Transacao(id, TipoTransacao.COMPRA, LocalDateTime.now(), ativo, quantidade, preco, instituicao);
         repository.salvar(transacao);
     }
 
-    public void vender(Investidor investidor, Ativo ativo, double quantidade, double preco) throws Exception {
+    public void vender(Investidor investidor, Ativo ativo, double quantidade, double preco, String instituicao) throws Exception {
         validacaoService.validarQuantidadePositiva(quantidade);
         Carteira carteira = investidor.getCarteira();
         validacaoService.validarQuantidadeAtivo(carteira, ativo, quantidade);
@@ -46,7 +47,8 @@ public class TransacaoService {
         carteira.setSaldo(carteira.getSaldo() + valorTotal);
         carteira.removerAtivo(ativo, quantidade);
 
-        Transacao transacao = new Transacao(TipoTransacao.VENDA, LocalDateTime.now(), ativo, quantidade, preco);
+        String id = java.util.UUID.randomUUID().toString();
+        Transacao transacao = new Transacao(id, TipoTransacao.VENDA, LocalDateTime.now(), ativo, quantidade, preco, instituicao);
         repository.salvar(transacao);
     }
 

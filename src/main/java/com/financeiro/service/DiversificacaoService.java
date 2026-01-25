@@ -7,6 +7,7 @@ import com.financeiro.model.FII;
 import com.financeiro.model.Tesouro;
 import com.financeiro.model.Stock;
 import com.financeiro.model.Criptoativo;
+import com.financeiro.model.ItemCarteira;
 import java.util.Map;
 
 public class DiversificacaoService {
@@ -26,10 +27,10 @@ public class DiversificacaoService {
         
         double valorAcoes = 0, valorFIIs = 0, valorTesouro = 0, valorStocks = 0, valorCripto = 0;
         
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
-            int quantidade = entry.getValue();
-            double valor = quantidade * ativo.getPreco();
+            ItemCarteira item = entry.getValue();
+            double valor = item.getQuantidade() * ativo.getValorEmReais();
             
             if (ativo instanceof Acao) {
                 valorAcoes += valor;
@@ -65,12 +66,12 @@ public class DiversificacaoService {
         
         double valorRendaFixa = 0, valorRendaVariavel = 0;
         
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
-            int quantidade = entry.getValue();
-            double valor = quantidade * ativo.getPreco();
+            ItemCarteira item = entry.getValue();
+            double valor = item.getQuantidade() * ativo.getValorEmReais();
             
-            if (ativo instanceof Tesouro) {
+            if (ativo.isRendaFixa()) {
                 valorRendaFixa += valor;
             } else {
                 valorRendaVariavel += valor;
@@ -95,15 +96,15 @@ public class DiversificacaoService {
         
         double valorNacional = 0, valorInternacional = 0;
         
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
-            int quantidade = entry.getValue();
-            double valor = quantidade * ativo.getPreco();
+            ItemCarteira item = entry.getValue();
+            double valor = item.getQuantidade() * ativo.getValorEmReais();
             
-            if (ativo instanceof Stock || ativo instanceof Criptoativo) {
-                valorInternacional += valor;
-            } else {
+            if (ativo.isNacional()) {
                 valorNacional += valor;
+            } else {
+                valorInternacional += valor;
             }
         }
         
@@ -119,10 +120,10 @@ public class DiversificacaoService {
         
         double somaQuadrados = 0;
         
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
-            int quantidade = entry.getValue();
-            double valor = quantidade * ativo.getPreco();
+            ItemCarteira item = entry.getValue();
+            double valor = item.getQuantidade() * ativo.getValorEmReais();
             double participacao = valor / valorTotal;
             somaQuadrados += Math.pow(participacao, 2);
         }
@@ -147,8 +148,9 @@ public class DiversificacaoService {
 
     private double calcularValorTotalCarteira(Carteira carteira) {
         double total = 0;
-        for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
-            total += entry.getValue() * entry.getKey().getPreco();
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
+            ItemCarteira item = entry.getValue();
+            total += item.getQuantidade() * entry.getKey().getValorEmReais();
         }
         return total;
     }

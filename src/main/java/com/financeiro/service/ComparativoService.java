@@ -1,6 +1,8 @@
 package com.financeiro.service;
 
 import com.financeiro.model.Carteira;
+import com.financeiro.model.Ativo;
+import com.financeiro.model.ItemCarteira;
 import java.util.List;
 import java.util.Map;
 
@@ -87,8 +89,9 @@ public class ComparativoService {
 
     private double calcularValorTotal(Carteira carteira) {
         double total = 0;
-        for (Map.Entry<com.financeiro.model.Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
-            total += entry.getValue() * entry.getKey().getPreco();
+        for (Map.Entry<Ativo, ItemCarteira> entry : carteira.getAtivos().entrySet()) {
+            ItemCarteira item = entry.getValue();
+            total += item.getQuantidade() * entry.getKey().getValorEmReais();
         }
         return total;
     }
