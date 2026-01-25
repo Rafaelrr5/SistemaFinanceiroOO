@@ -27,6 +27,16 @@ public class Tesouro extends Ativo {
     }
 
     @Override
+    public boolean isRendaFixa() {
+        return true; // Tesouro é renda fixa
+    }
+
+    @Override
+    public boolean isNacional() {
+        return true; // Tesouro é nacional
+    }
+
+    @Override
     public String toString() {
         return "Tesouro{" +
                 "ticker='" + getTicker() + '\'' +

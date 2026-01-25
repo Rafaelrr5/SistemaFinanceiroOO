@@ -27,6 +27,11 @@ public class Stock extends Ativo {
     }
 
     @Override
+    public boolean isNacional() {
+        return false; // Stocks são internacionais
+    }
+
+    @Override
     public String toString() {
         return "Stock{" +
                 "ticker='" + getTicker() + '\'' +

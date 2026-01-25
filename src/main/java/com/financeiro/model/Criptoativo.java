@@ -27,6 +27,11 @@ public class Criptoativo extends Ativo {
     }
 
     @Override
+    public boolean isNacional() {
+        return false; // Criptoativos são internacionais
+    }
+
+    @Override
     public String toString() {
         return "Criptoativo{" +
                 "ticker='" + getTicker() + '\'' +
