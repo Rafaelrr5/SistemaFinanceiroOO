@@ -5,6 +5,7 @@ import com.financeiro.service.*;
 import com.financeiro.repository.*;
 import java.util.Scanner;
 import java.util.List;
+import java.util.Map;
 
 public class Menu {
     private Scanner scanner;
@@ -44,10 +45,10 @@ public class Menu {
             System.out.println("4. Análises e Relatórios");
             System.out.println("5. Sair");
             System.out.print("Escolha uma opção: ");
-            
+
             int opcao = scanner.nextInt();
             scanner.nextLine();
-            
+
             switch (opcao) {
                 case 1:
                     menuAtivos();
@@ -82,14 +83,15 @@ public class Menu {
             System.out.println("7. Listar apenas Tesouro");
             System.out.println("8. Voltar ao menu principal");
             System.out.print("Escolha uma opção: ");
-            
+
             int opcao = scanner.nextInt();
             scanner.nextLine();
-            
-            if (opcao == 8) break;
-            
+
+            if (opcao == 8)
+                break;
+
             List<Ativo> ativos = ativoRepository.listarTodos();
-            
+
             switch (opcao) {
                 case 1:
                     listarAtivos(ativos);
@@ -122,14 +124,14 @@ public class Menu {
         System.out.println("\n=== TODOS OS ATIVOS ===");
         System.out.printf("%-10s %-30s %-12s %-20s\n", "Ticker", "Nome", "Preço (R$)", "Tipo");
         System.out.println("-".repeat(75));
-        
+
         for (Ativo ativo : ativos) {
             String tipo = ativo.getClass().getSimpleName();
-            System.out.printf("%-10s %-30s %-12.2f %-20s\n", 
-                ativo.getTicker(), 
-                ativo.getNome().length() > 30 ? ativo.getNome().substring(0, 27) + "..." : ativo.getNome(),
-                ativo.getPreco(),
-                tipo);
+            System.out.printf("%-10s %-30s %-12.2f %-20s\n",
+                    ativo.getTicker(),
+                    ativo.getNome().length() > 30 ? ativo.getNome().substring(0, 27) + "..." : ativo.getNome(),
+                    ativo.getPreco(),
+                    tipo);
         }
         System.out.println("Total: " + ativos.size() + " ativos");
     }
@@ -137,7 +139,7 @@ public class Menu {
     private void buscarAtivoPorTicker() {
         System.out.print("Digite o ticker do ativo: ");
         String ticker = scanner.nextLine();
-        
+
         Ativo ativo = ativoRepository.buscarPorTicker(ticker);
         if (ativo != null) {
             System.out.println("\nAtivo encontrado:");
@@ -150,21 +152,21 @@ public class Menu {
     private void listarPorTipo(List<Ativo> ativos, String tipo) {
         System.out.println("\n=== " + tipo.toUpperCase() + "S ===");
         int count = 0;
-        
+
         for (Ativo ativo : ativos) {
             if (ativo.getClass().getSimpleName().equals(tipo)) {
                 if (count == 0) {
                     System.out.printf("%-10s %-30s %-12s\n", "Ticker", "Nome", "Preço (R$)");
                     System.out.println("-".repeat(55));
                 }
-                System.out.printf("%-10s %-30s %-12.2f\n", 
-                    ativo.getTicker(), 
-                    ativo.getNome().length() > 30 ? ativo.getNome().substring(0, 27) + "..." : ativo.getNome(),
-                    ativo.getPreco());
+                System.out.printf("%-10s %-30s %-12.2f\n",
+                        ativo.getTicker(),
+                        ativo.getNome().length() > 30 ? ativo.getNome().substring(0, 27) + "..." : ativo.getNome(),
+                        ativo.getPreco());
                 count++;
             }
         }
-        
+
         if (count == 0) {
             System.out.println("Nenhum " + tipo.toLowerCase() + " encontrado.");
         } else {
@@ -187,10 +189,10 @@ public class Menu {
             System.out.println("3. Selecionar carteira");
             System.out.println("4. Voltar ao menu principal");
             System.out.print("Escolha uma opção: ");
-            
+
             int opcao = scanner.nextInt();
             scanner.nextLine();
-            
+
             switch (opcao) {
                 case 1:
                     criarCarteira();
@@ -212,32 +214,32 @@ public class Menu {
     private void criarCarteira() {
         System.out.print("Digite o nome da nova carteira: ");
         String nome = scanner.nextLine();
-        
+
         Carteira novaCarteira = new Carteira(nome);
         carteiraService.criarCarteira(novaCarteira);
-        
+
         System.out.print("Deseja adicionar saldo inicial? (s/n): ");
         String resposta = scanner.nextLine();
-        
+
         if (resposta.equalsIgnoreCase("s")) {
             System.out.print("Digite o valor do saldo inicial: R$ ");
             double saldo = scanner.nextDouble();
             scanner.nextLine();
-            
+
             carteiraService.adicionarSaldo(novaCarteira, saldo);
         }
-        
+
         System.out.println("Carteira '" + nome + "' criada com sucesso!");
     }
 
     private void listarCarteiras() {
         List<Carteira> carteiras = carteiraService.listarCarteiras();
-        
+
         if (carteiras.isEmpty()) {
             System.out.println("Nenhuma carteira cadastrada.");
             return;
         }
-        
+
         System.out.println("\n=== CARTEIRAS CADASTRADAS ===");
         for (Carteira carteira : carteiras) {
             System.out.println("Nome: " + carteira.getNome());
@@ -251,7 +253,7 @@ public class Menu {
     private void selecionarCarteira() {
         System.out.print("Digite o nome da carteira: ");
         String nome = scanner.nextLine();
-        
+
         try {
             Carteira carteira = carteiraService.buscarCarteira(nome);
             menuCarteiraSelecionada(carteira);
@@ -272,10 +274,10 @@ public class Menu {
             System.out.println("5. Ver transações");
             System.out.println("6. Voltar ao menu anterior");
             System.out.print("Escolha uma opção: ");
-            
+
             int opcao = scanner.nextInt();
             scanner.nextLine();
-            
+
             switch (opcao) {
                 case 1:
                     comprarAtivo(carteira);
@@ -303,21 +305,21 @@ public class Menu {
     private void comprarAtivo(Carteira carteira) {
         System.out.print("Digite o ticker do ativo: ");
         String ticker = scanner.nextLine();
-        
+
         Ativo ativo = ativoRepository.buscarPorTicker(ticker);
         if (ativo == null) {
             System.out.println("Ativo não encontrado: " + ticker);
             return;
         }
-        
+
         System.out.print("Digite a quantidade: ");
         int quantidade = scanner.nextInt();
         scanner.nextLine();
-        
+
         System.out.print("Digite o preço unitário: R$ ");
         double preco = scanner.nextDouble();
         scanner.nextLine();
-        
+
         try {
             transacaoService.comprar(carteira, ativo, quantidade, preco);
             System.out.println("Compra realizada com sucesso!");
@@ -329,21 +331,21 @@ public class Menu {
     private void venderAtivo(Carteira carteira) {
         System.out.print("Digite o ticker do ativo: ");
         String ticker = scanner.nextLine();
-        
+
         Ativo ativo = ativoRepository.buscarPorTicker(ticker);
         if (ativo == null) {
             System.out.println("Ativo não encontrado: " + ticker);
             return;
         }
-        
+
         System.out.print("Digite a quantidade: ");
         int quantidade = scanner.nextInt();
         scanner.nextLine();
-        
+
         System.out.print("Digite o preço unitário: R$ ");
         double preco = scanner.nextDouble();
         scanner.nextLine();
-        
+
         try {
             transacaoService.vender(carteira, ativo, quantidade, preco);
             System.out.println("Venda realizada com sucesso!");
@@ -354,25 +356,25 @@ public class Menu {
 
     private void listarAtivosCarteira(Carteira carteira) {
         System.out.println("\n=== ATIVOS NA CARTEIRA ===");
-        System.out.printf("%-10s %-30s %-8s %-12s %-12s\n", 
-            "Ticker", "Nome", "Qtd", "Preço Unit.", "Valor Total");
+        System.out.printf("%-10s %-30s %-8s %-12s %-12s\n",
+                "Ticker", "Nome", "Qtd", "Preço Unit.", "Valor Total");
         System.out.println("-".repeat(75));
-        
+
         double valorTotal = 0;
         for (Map.Entry<Ativo, Integer> entry : carteira.getAtivos().entrySet()) {
             Ativo ativo = entry.getKey();
             int quantidade = entry.getValue();
             double valor = quantidade * ativo.getPreco();
             valorTotal += valor;
-            
+
             System.out.printf("%-10s %-30s %-8d R$ %-10.2f R$ %-10.2f\n",
-                ativo.getTicker(), 
-                ativo.getNome().length() > 30 ? ativo.getNome().substring(0, 27) + "..." : ativo.getNome(),
-                quantidade,
-                ativo.getPreco(),
-                valor);
+                    ativo.getTicker(),
+                    ativo.getNome().length() > 30 ? ativo.getNome().substring(0, 27) + "..." : ativo.getNome(),
+                    quantidade,
+                    ativo.getPreco(),
+                    valor);
         }
-        
+
         System.out.println("-".repeat(75));
         System.out.printf("%60s R$ %-10.2f\n", "VALOR TOTAL:", valorTotal);
     }
@@ -381,7 +383,7 @@ public class Menu {
         System.out.print("Digite o valor a adicionar: R$ ");
         double valor = scanner.nextDouble();
         scanner.nextLine();
-        
+
         carteiraService.adicionarSaldo(carteira, valor);
         System.out.println("Saldo adicionado com sucesso!");
         System.out.println("Novo saldo: R$ " + carteira.getSaldo());
@@ -389,12 +391,12 @@ public class Menu {
 
     private void verTransacoes() {
         List<Transacao> transacoes = transacaoService.listarTransacoes();
-        
+
         if (transacoes.isEmpty()) {
             System.out.println("Nenhuma transação registrada.");
             return;
         }
-        
+
         System.out.println("\n=== HISTÓRICO DE TRANSAÇÕES ===");
         for (Transacao transacao : transacoes) {
             System.out.println(transacao);
@@ -411,10 +413,10 @@ public class Menu {
             System.out.println("5. Calculadora financeira");
             System.out.println("6. Voltar ao menu principal");
             System.out.print("Escolha uma opção: ");
-            
+
             int opcao = scanner.nextInt();
             scanner.nextLine();
-            
+
             switch (opcao) {
                 case 1:
                     menuRentabilidade();
@@ -442,24 +444,24 @@ public class Menu {
     private void menuRentabilidade() {
         System.out.print("Digite o nome da carteira: ");
         String nome = scanner.nextLine();
-        
+
         try {
             Carteira carteira = carteiraService.buscarCarteira(nome);
-            
+
             double rentabilidadeTotal = analiseService.calcularRentabilidadeTotal(carteira);
             double rentabilidadeAnualizada = analiseService.calcularRentabilidadeAnualizada(carteira);
-            
+
             System.out.println("\n=== ANÁLISE DE RENTABILIDADE ===");
             System.out.println("Carteira: " + carteira.getNome());
             System.out.println("Rentabilidade Total: " + String.format("%.2f", rentabilidadeTotal) + "%");
             System.out.println("Rentabilidade Anualizada: " + String.format("%.2f", rentabilidadeAnualizada) + "%");
-            
+
             Map<String, Double> desempenhoPorAtivo = analiseService.calcularDesempenhoPorAtivo(carteira);
             System.out.println("\nDesempenho por ativo:");
             for (Map.Entry<String, Double> entry : desempenhoPorAtivo.entrySet()) {
                 System.out.println("  " + entry.getKey() + ": " + String.format("%.2f", entry.getValue()) + "%");
             }
-            
+
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
         }
@@ -468,32 +470,36 @@ public class Menu {
     private void menuDiversificacao() {
         System.out.print("Digite o nome da carteira: ");
         String nome = scanner.nextLine();
-        
+
         try {
             Carteira carteira = carteiraService.buscarCarteira(nome);
-            
+
             System.out.println("\n=== ANÁLISE DE DIVERSIFICAÇÃO ===");
             System.out.println("Carteira: " + carteira.getNome());
-            
+
             Map<String, Double> distribuicaoClasses = diversificacaoService.calcularDistribuicaoPorClasse(carteira);
             System.out.println("\nDistribuição por classe:");
             for (Map.Entry<String, Double> entry : distribuicaoClasses.entrySet()) {
                 System.out.println("  " + entry.getKey() + ": " + String.format("%.2f", entry.getValue()) + "%");
             }
-            
-            Map<String, Double> distribuicaoRenda = diversificacaoService.calcularDistribuicaoRendaFixaVariavel(carteira);
+
+            Map<String, Double> distribuicaoRenda = diversificacaoService
+                    .calcularDistribuicaoRendaFixaVariavel(carteira);
             System.out.println("\nDistribuição Renda Fixa vs Variável:");
             System.out.println("  Renda Fixa: " + String.format("%.2f", distribuicaoRenda.get("Renda Fixa")) + "%");
-            System.out.println("  Renda Variável: " + String.format("%.2f", distribuicaoRenda.get("Renda Variável")) + "%");
-            
-            Map<String, Double> distribuicaoNacional = diversificacaoService.calcularDistribuicaoNacionalInternacional(carteira);
+            System.out.println(
+                    "  Renda Variável: " + String.format("%.2f", distribuicaoRenda.get("Renda Variável")) + "%");
+
+            Map<String, Double> distribuicaoNacional = diversificacaoService
+                    .calcularDistribuicaoNacionalInternacional(carteira);
             System.out.println("\nDistribuição Nacional vs Internacional:");
             System.out.println("  Nacional: " + String.format("%.2f", distribuicaoNacional.get("Nacional")) + "%");
-            System.out.println("  Internacional: " + String.format("%.2f", distribuicaoNacional.get("Internacional")) + "%");
-            
+            System.out.println(
+                    "  Internacional: " + String.format("%.2f", distribuicaoNacional.get("Internacional")) + "%");
+
             String avaliacao = diversificacaoService.avaliarDiversificacao(carteira);
             System.out.println("\nAvaliação: " + avaliacao);
-            
+
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
         }
@@ -501,59 +507,63 @@ public class Menu {
 
     private void menuComparativo() {
         List<Carteira> carteiras = carteiraService.listarCarteiras();
-        
+
         if (carteiras.size() < 2) {
             System.out.println("É necessário ter pelo menos 2 carteiras para comparar.");
             return;
         }
-        
+
         System.out.println("\n=== COMPARATIVO ENTRE CARTEIRAS ===");
-        
+
         Map<String, Double> comparativoValor = comparativoService.compararCarteiras(carteiras);
         System.out.println("\nValor total das carteiras:");
         for (Map.Entry<String, Double> entry : comparativoValor.entrySet()) {
             System.out.println("  " + entry.getKey() + ": R$ " + String.format("%.2f", entry.getValue()));
         }
-        
-        Map<String, Double> comparativoRentabilidade = comparativoService.compararRentabilidade(carteiras, analiseService);
+
+        Map<String, Double> comparativoRentabilidade = comparativoService.compararRentabilidade(carteiras,
+                analiseService);
         System.out.println("\nRentabilidade total:");
         for (Map.Entry<String, Double> entry : comparativoRentabilidade.entrySet()) {
             System.out.println("  " + entry.getKey() + ": " + String.format("%.2f", entry.getValue()) + "%");
         }
-        
-        Map<String, String> comparativoDiversificacao = comparativoService.compararDiversificacao(carteiras, diversificacaoService);
+
+        Map<String, String> comparativoDiversificacao = comparativoService.compararDiversificacao(carteiras,
+                diversificacaoService);
         System.out.println("\nAvaliação de diversificação:");
         for (Map.Entry<String, String> entry : comparativoDiversificacao.entrySet()) {
             System.out.println("  " + entry.getKey() + ": " + entry.getValue());
         }
-        
+
         Carteira melhorCarteira = comparativoService.identificarMelhorCarteira(carteiras, analiseService);
-        System.out.println("\nMelhor carteira por rentabilidade: " + 
-            (melhorCarteira != null ? melhorCarteira.getNome() : "N/A"));
+        System.out.println("\nMelhor carteira por rentabilidade: " +
+                (melhorCarteira != null ? melhorCarteira.getNome() : "N/A"));
     }
 
     private void menuRelatorio() {
         System.out.print("Digite o nome da carteira: ");
         String nome = scanner.nextLine();
-        
+
         try {
             Carteira carteira = carteiraService.buscarCarteira(nome);
-            
+
             System.out.println("\n=== GERAR RELATÓRIO ===");
             System.out.println("1. Relatório em texto");
             System.out.println("2. Relatório em JSON");
             System.out.print("Escolha o formato: ");
-            
+
             int formato = scanner.nextInt();
             scanner.nextLine();
-            
-            Investidor investidorExemplo = new Investidor("João Silva", "123.456.789-00", "joao@email.com", "(11) 99999-9999");
-            
+
+            Investidor investidorExemplo = new Investidor("João Silva", "123.456.789-00", "joao@email.com",
+                    "(11) 99999-9999");
+
             switch (formato) {
                 case 1:
-                    String relatorioTexto = relatorioGerador.gerarRelatorioTexto(carteira, investidorExemplo, analiseService, diversificacaoService);
+                    String relatorioTexto = relatorioGerador.gerarRelatorioTexto(carteira, investidorExemplo,
+                            analiseService, diversificacaoService);
                     System.out.println(relatorioTexto);
-                    
+
                     System.out.print("Deseja salvar em arquivo? (s/n): ");
                     String salvar = scanner.nextLine();
                     if (salvar.equalsIgnoreCase("s")) {
@@ -562,11 +572,12 @@ public class Menu {
                         relatorioGerador.salvarRelatorioArquivo(relatorioTexto, nomeArquivo + ".txt");
                     }
                     break;
-                    
+
                 case 2:
-                    String relatorioJSON = relatorioGerador.gerarRelatorioJSON(carteira, investidorExemplo, analiseService, diversificacaoService);
+                    String relatorioJSON = relatorioGerador.gerarRelatorioJSON(carteira, investidorExemplo,
+                            analiseService, diversificacaoService);
                     System.out.println(relatorioJSON);
-                    
+
                     System.out.print("Deseja salvar em arquivo? (s/n): ");
                     salvar = scanner.nextLine();
                     if (salvar.equalsIgnoreCase("s")) {
@@ -575,11 +586,11 @@ public class Menu {
                         relatorioGerador.salvarRelatorioArquivo(relatorioJSON, nomeArquivo + ".json");
                     }
                     break;
-                    
+
                 default:
                     System.out.println("Opção inválida!");
             }
-            
+
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
         }
@@ -594,10 +605,10 @@ public class Menu {
             System.out.println("4. Calcular valor futuro");
             System.out.println("5. Voltar ao menu anterior");
             System.out.print("Escolha uma opção: ");
-            
+
             int opcao = scanner.nextInt();
             scanner.nextLine();
-            
+
             switch (opcao) {
                 case 1:
                     calcularVariacaoPercentual();
@@ -623,11 +634,11 @@ public class Menu {
         System.out.print("Digite o valor inicial: R$ ");
         double inicial = scanner.nextDouble();
         scanner.nextLine();
-        
+
         System.out.print("Digite o valor final: R$ ");
         double finalValor = scanner.nextDouble();
         scanner.nextLine();
-        
+
         double variacao = CalculadoraFinanceira.calcularVariacaoPercentual(inicial, finalValor);
         System.out.println("Variação percentual: " + String.format("%.2f", variacao) + "%");
     }
@@ -636,15 +647,15 @@ public class Menu {
         System.out.print("Digite o valor principal: R$ ");
         double principal = scanner.nextDouble();
         scanner.nextLine();
-        
+
         System.out.print("Digite a taxa (em decimal, ex: 0.05 para 5%): ");
         double taxa = scanner.nextDouble();
         scanner.nextLine();
-        
+
         System.out.print("Digite o número de períodos: ");
         int periodos = scanner.nextInt();
         scanner.nextLine();
-        
+
         double juros = CalculadoraFinanceira.calcularJurosSimples(principal, taxa, periodos);
         System.out.println("Juros simples: R$ " + String.format("%.2f", juros));
         System.out.println("Montante final: R$ " + String.format("%.2f", principal + juros));
@@ -654,15 +665,15 @@ public class Menu {
         System.out.print("Digite o valor principal: R$ ");
         double principal = scanner.nextDouble();
         scanner.nextLine();
-        
+
         System.out.print("Digite a taxa (em decimal, ex: 0.05 para 5%): ");
         double taxa = scanner.nextDouble();
         scanner.nextLine();
-        
+
         System.out.print("Digite o número de períodos: ");
         int periodos = scanner.nextInt();
         scanner.nextLine();
-        
+
         double montante = CalculadoraFinanceira.calcularJurosCompostos(principal, taxa, periodos);
         System.out.println("Montante com juros compostos: R$ " + String.format("%.2f", montante));
         System.out.println("Juros totais: R$ " + String.format("%.2f", montante - principal));
@@ -672,15 +683,15 @@ public class Menu {
         System.out.print("Digite o aporte mensal: R$ ");
         double aporte = scanner.nextDouble();
         scanner.nextLine();
-        
+
         System.out.print("Digite a taxa mensal (em decimal, ex: 0.01 para 1%): ");
         double taxa = scanner.nextDouble();
         scanner.nextLine();
-        
+
         System.out.print("Digite o número de meses: ");
         int meses = scanner.nextInt();
         scanner.nextLine();
-        
+
         double valorFuturo = CalculadoraFinanceira.calcularValorFuturo(aporte, taxa, meses);
         System.out.println("Valor futuro: R$ " + String.format("%.2f", valorFuturo));
         System.out.println("Total investido: R$ " + String.format("%.2f", aporte * meses));

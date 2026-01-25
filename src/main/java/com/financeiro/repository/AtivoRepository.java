@@ -23,7 +23,10 @@ public class AtivoRepository {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
-                if (primeira) { primeira = false; continue; }
+                if (primeira) {
+                    primeira = false;
+                    continue;
+                }
                 String[] dados = linha.split(";");
                 if (dados.length >= 4) {
                     String ticker = dados[0].trim();
@@ -43,7 +46,10 @@ public class AtivoRepository {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
-                if (primeira) { primeira = false; continue; }
+                if (primeira) {
+                    primeira = false;
+                    continue;
+                }
                 String[] dados = linha.split(";");
                 if (dados.length >= 6) {
                     String ticker = dados[0].trim();
@@ -65,7 +71,10 @@ public class AtivoRepository {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
-                if (primeira) { primeira = false; continue; }
+                if (primeira) {
+                    primeira = false;
+                    continue;
+                }
                 String[] dados = linha.split(";");
                 if (dados.length >= 5) {
                     String ticker = dados[0].trim();
@@ -87,7 +96,10 @@ public class AtivoRepository {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
-                if (primeira) { primeira = false; continue; }
+                if (primeira) {
+                    primeira = false;
+                    continue;
+                }
                 String[] dados = linha.split(";");
                 if (dados.length >= 5) {
                     String ticker = dados[0].trim();
@@ -109,7 +121,10 @@ public class AtivoRepository {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
-                if (primeira) { primeira = false; continue; }
+                if (primeira) {
+                    primeira = false;
+                    continue;
+                }
                 String[] dados = linha.split(";");
                 if (dados.length >= 5) {
                     String ticker = dados[0].trim();

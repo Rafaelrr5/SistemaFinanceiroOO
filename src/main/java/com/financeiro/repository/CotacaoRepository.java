@@ -18,11 +18,11 @@ public class CotacaoRepository {
         adicionarCotacao("PETR4", LocalDate.now().minusDays(10), 28.50, 1.5);
         adicionarCotacao("PETR4", LocalDate.now().minusDays(5), 29.80, 4.5);
         adicionarCotacao("PETR4", LocalDate.now(), 29.83, 0.1);
-        
+
         adicionarCotacao("ITUB4", LocalDate.now().minusDays(10), 38.00, 2.0);
         adicionarCotacao("ITUB4", LocalDate.now().minusDays(5), 39.10, 2.9);
         adicionarCotacao("ITUB4", LocalDate.now(), 39.32, 0.6);
-        
+
         adicionarCotacao("BTC", LocalDate.now().minusDays(10), 42000, 5.2);
         adicionarCotacao("BTC", LocalDate.now().minusDays(5), 44000, 4.8);
         adicionarCotacao("BTC", LocalDate.now(), 45000, 2.3);
