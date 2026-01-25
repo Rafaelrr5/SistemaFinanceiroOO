@@ -91,6 +91,22 @@ public abstract class Investidor {
         return this.patrimonio >= 1000000.00;
     }
 
+    /**
+     * Método obrigatório: Cadastra investimento (compra) na carteira do investidor.
+     * Conforme especificação, todo investidor deve ter capacidade de cadastrar investimento.
+     * @param ativo O ativo a ser adquirido
+     * @param quantidade Quantidade do ativo
+     * @param preco Preço de compra
+     * @return true se a operação foi bem sucedida, false caso contrário
+     */
+    public abstract boolean cadastrarInvestimento(Ativo ativo, double quantidade, double preco);
+
+    /**
+     * Verifica se o investidor pode movimentar determinado tipo de ativo.
+     * Implementado nas subclasses conforme regras de negócio.
+     */
+    public abstract boolean podeMovimentar(Ativo ativo);
+
     @Override
     public String toString() {
         return "Investidor{" +

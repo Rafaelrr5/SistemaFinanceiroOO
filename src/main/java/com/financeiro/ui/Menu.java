@@ -27,13 +27,20 @@ public class Menu {
     private AtivoService ativoService;
     private ArquivoService arquivoService;
 
+    // Construtor padrão (cria repositórios novos)
     public Menu() {
+        this(new AtivoRepository(), new InvestidorRepository());
+    }
+    
+    // Construtor que recebe repositórios já carregados
+    public Menu(AtivoRepository ativoRepository, InvestidorRepository investidorRepository) {
         scanner = new Scanner(System.in);
-        ativoRepository = new AtivoRepository();
+        this.ativoRepository = ativoRepository;
+        this.investidorRepository = investidorRepository;
+        
         carteiraRepository = new CarteiraRepository();
         transacaoRepository = new TransacaoRepository();
         cotacaoRepository = new CotacaoRepository();
-        investidorRepository = new InvestidorRepository();
         
         validacaoService = new ValidacaoService();
         transacaoService = new TransacaoService(transacaoRepository, validacaoService);
