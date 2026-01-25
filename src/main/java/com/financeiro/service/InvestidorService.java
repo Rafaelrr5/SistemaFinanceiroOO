@@ -1,5 +1,6 @@
 package com.financeiro.service;
 
+import com.financeiro.exception.RegraNegocioException;
 import com.financeiro.model.Investidor;
 import com.financeiro.repository.InvestidorRepository;
 import java.util.List;
@@ -11,15 +12,19 @@ public class InvestidorService {
         this.repository = repository;
     }
 
-    public void cadastrar(Investidor investidor) throws Exception {
+    public void cadastrar(Investidor investidor) {
         if (investidor.getNome() == null || investidor.getNome().trim().isEmpty()) {
-            throw new Exception("Nome é obrigatório.");
+            throw new RegraNegocioException("Nome é obrigatório.");
         }
         if (investidor.getIdentificador() == null || investidor.getIdentificador().trim().isEmpty()) {
-            throw new Exception("Documento (CPF/CNPJ) é obrigatório.");
+            throw new RegraNegocioException("Documento (CPF/CNPJ) é obrigatório.");
         }
+        
+        // Validação de CPF/CNPJ
+        DocumentoValidator.validarDocumento(investidor.getIdentificador());
+        
         if (investidor.getPatrimonio() < 0) {
-            throw new Exception("Patrimônio não pode ser negativo.");
+            throw new RegraNegocioException("Patrimônio não pode ser negativo.");
         }
         repository.salvar(investidor);
     }
