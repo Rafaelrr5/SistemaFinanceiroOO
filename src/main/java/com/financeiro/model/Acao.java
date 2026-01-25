@@ -18,9 +18,10 @@ public class Acao extends Ativo implements AtivoNacional {
 
     public String getTipoAcao() {
         String ticker = getTicker();
+        // Verificar Unit (11) PRIMEIRO, pois endsWith("1") pegaria ações terminadas em 11
+        if (ticker.endsWith("11")) return "Unit";
         if (ticker.endsWith("3")) return "Ordinária";
         if (ticker.endsWith("4") || ticker.endsWith("5") || ticker.endsWith("6")) return "Preferencial";
-        if (ticker.endsWith("11")) return "Unit";
         return "Desconhecido";
     }
 

@@ -252,6 +252,8 @@ public class Menu {
             if (id == null || id.trim().isEmpty()) {
                 throw new com.financeiro.exception.RegraNegocioException("CPF/CNPJ não pode ser vazio.");
             }
+            // Valida formato do CPF/CNPJ
+            com.financeiro.service.DocumentoValidator.validarDocumento(id);
             
             System.out.print("Telefone: "); String tel = scanner.nextLine();
             System.out.print("Email: "); String email = scanner.nextLine();
@@ -329,13 +331,15 @@ public class Menu {
             System.out.println("\n=== INVESTIDOR: " + investidor.getNome() + " ===");
             System.out.println("1. Editar Informações");
             System.out.println("2. Excluir este investidor");
-            System.out.println("3. Ver Carteira (Tabela Ativos)");
-            System.out.println("4. Totais (Gasto vs Atual)");
-            System.out.println("5. Percentuais (RendaFixa/Var, Nac/Int)");
-            System.out.println("6. Salvar Relatório (JSON)");
-            System.out.println("7. Comprar");
-            System.out.println("8. Vender");
-            System.out.println("9. Lote de Movimentações");
+            System.out.println("3. Exibir ativos do investidor (Tabela)");
+            System.out.println("4. Exibir valor total gasto (em Real)");
+            System.out.println("5. Exibir valor total atual (em Real)");
+            System.out.println("6. Exibir porcentagens renda fixa/variável");
+            System.out.println("7. Exibir porcentagens nacional/internacional");
+            System.out.println("8. Salvar Relatório (JSON)");
+            System.out.println("9. Adicionar movimentação de compra");
+            System.out.println("10. Adicionar movimentação de venda");
+            System.out.println("11. Adicionar lote de movimentações");
             System.out.println("0. Voltar");
             System.out.print("Opção: ");
             int op = scanner.nextInt(); scanner.nextLine();
@@ -346,12 +350,14 @@ public class Menu {
                     investidorService.excluir(investidor.getIdentificador()); 
                     System.out.println("Investidor excluído."); return;
                 case 3: listarAtivosCarteira(investidor.getCarteira()); break;
-                case 4: exibirTotais(investidor.getCarteira()); break;
-                case 5: exibirPercentuais(investidor.getCarteira()); break;
-                case 6: salvarRelatorioJson(investidor); break;
-                case 7: comprarAtivo(investidor.getCarteira(), investidor); break;
-                case 8: venderAtivo(investidor.getCarteira(), investidor); break;
-                case 9: 
+                case 4: exibirValorTotalGasto(investidor.getCarteira()); break;
+                case 5: exibirValorTotalAtual(investidor.getCarteira()); break;
+                case 6: exibirPercentuaisRendaFixaVariavel(investidor.getCarteira()); break;
+                case 7: exibirPercentuaisNacionalInternacional(investidor.getCarteira()); break;
+                case 8: salvarRelatorioJson(investidor); break;
+                case 9: comprarAtivo(investidor.getCarteira(), investidor); break;
+                case 10: venderAtivo(investidor.getCarteira(), investidor); break;
+                case 11: 
                     System.out.print("Caminho arquivo: ");
                     String path = scanner.nextLine();
                     try {
@@ -411,6 +417,49 @@ public class Menu {
         System.out.println("-".repeat(55));
     }
 
+    /**
+     * Exibe o valor total gasto (quantidade x preço médio de compra) em Real.
+     * Conforme especificação do trabalho.
+     */
+    private void exibirValorTotalGasto(Carteira c) {
+        double custo = c.getAtivos().values().stream()
+                .mapToDouble(com.financeiro.model.ItemCarteira::getValorTotalGasto)
+                .sum();
+        System.out.printf("\nValor Total Gasto: R$ %.2f\n", custo);
+    }
+
+    /**
+     * Exibe o valor total atual (quantidade x preço atual) em Real.
+     * Conforme especificação do trabalho.
+     */
+    private void exibirValorTotalAtual(Carteira c) {
+        double atual = c.getValorTotalCarteira();
+        System.out.printf("\nValor Total Atual: R$ %.2f\n", atual);
+    }
+
+    /**
+     * Exibe as porcentagens de produtos de renda fixa e renda variável.
+     * Conforme especificação do trabalho.
+     */
+    private void exibirPercentuaisRendaFixaVariavel(Carteira c) {
+        Map<String, Double> renda = diversificacaoService.calcularDistribuicaoRendaFixaVariavel(c);
+        System.out.println("\n=== DISTRIBUIÇÃO RENDA FIXA / VARIÁVEL ===");
+        System.out.printf("Renda Fixa: %.2f%%\n", renda.get("Renda Fixa"));
+        System.out.printf("Renda Variável: %.2f%%\n", renda.get("Renda Variável"));
+    }
+
+    /**
+     * Exibe as porcentagens de produtos nacionais e internacionais.
+     * Conforme especificação do trabalho.
+     */
+    private void exibirPercentuaisNacionalInternacional(Carteira c) {
+        Map<String, Double> nac = diversificacaoService.calcularDistribuicaoNacionalInternacional(c);
+        System.out.println("\n=== DISTRIBUIÇÃO NACIONAL / INTERNACIONAL ===");
+        System.out.printf("Nacional: %.2f%%\n", nac.get("Nacional"));
+        System.out.printf("Internacional: %.2f%%\n", nac.get("Internacional"));
+    }
+
+    // Métodos legados mantidos para compatibilidade com outras partes do código
     private void exibirTotais(Carteira c) {
         double atual = c.getValorTotalCarteira();
         // Custo total seria somar quantidade * precoMedio de todos items
