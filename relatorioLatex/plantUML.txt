@@ -1,3 +1,255 @@
-https://editor.plantuml.com/uml/RP9HYiGW38RVSuemJxjtAAKtALcROOHgIanXvlPJqMeBcoU_FyRyHgTafBQ75UWlcP8ph75oJxYLKa9yt8K7K8nYP5vYhMmCpgjR6LiKXfzVl4MHv_GIjVaf6g3swZio_w_EoLXP48UXhEopyJZ2GaRNWiQmU0eIbtPCPHZ6kwsgNtrnD6-VlgNm8U_XMfaP-EruwsF1nk3ZOVH9xfnCOmXyDzqODXKJ9-lPucHGTgBzCbWO-YoAtFb8wTuVEgSomyHnoJ_X2m00
+@startuml DiagramaSimplificado
+' ============================================================
+' DIAGRAMA 1: MODELO DE DOMÍNIO (Simplificado)
+' Cole este código em: https://www.plantuml.com/plantuml/uml/
+' ============================================================
 
-https://www.overleaf.com/project/697679d8b8a5bde4a63060fa
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty methods
+
+title Diagrama de Classes - Modelo de Domínio
+
+' === ENUMERAÇÕES ===
+enum PerfilInvestidor {
+    CONSERVADOR
+    MODERADO
+    ARROJADO
+}
+
+enum TipoTransacao {
+    COMPRA
+    VENDA
+}
+
+' === INTERFACES ===
+interface AtivoNacional <<interface>> {
+    +getPrecoEmReais(): double
+}
+
+interface AtivoInternacional <<interface>> {
+    +converterParaReais(): double
+    +getFatorConversao(): double
+}
+
+interface Investimento <<interface>> {
+    +cadastrarInvestimento(): boolean
+    +podeMovimentar(ativo): boolean
+}
+
+' === ATIVO E SUBCLASSES ===
+abstract class Ativo {
+    -ticker: String
+    -nome: String
+    -preco: double
+    -qualificado: boolean
+    +isRendaFixa(): boolean
+    +isNacional(): boolean
+}
+
+class Acao {
+    +getTipoAcao(): String
+}
+note right of Acao : Ordinária (3)\nPreferencial (4,5,6)\nUnit (11)
+
+class FII {
+    -setor: String
+    -ultimoDividendo: double
+    -taxaAdministracao: double
+    +getTaxaAdministracaoFormatada(): String
+}
+
+class Tesouro {
+    -tipoRendimento: String
+    -vencimento: String
+}
+note right of Tesouro : Renda FIXA
+
+class Stock {
+    -bolsaNegociacao: String
+    -setor: String
+}
+
+class Criptoativo {
+    -algoritmoConsenso: String
+    -quantidadeMaxima: double
+}
+
+' === INVESTIDOR E SUBCLASSES ===
+abstract class Investidor {
+    -nome: String
+    -identificador: String
+    -patrimonio: double
+    -carteira: Carteira
+    +isQualificado(): boolean
+}
+
+class PessoaFisica {
+    -perfil: PerfilInvestidor
+}
+note bottom of PessoaFisica : Cripto → só ARROJADO\nStocks → MODERADO/ARROJADO
+
+class Institucional {
+    -razaoSocial: String
+}
+note bottom of Institucional : Pode tudo
+
+' === CARTEIRA ===
+class Carteira {
+    -ativos: Map<Ativo, ItemCarteira>
+    +adicionarAtivo()
+    +removerAtivo()
+    +getValorTotalCarteira(): double
+}
+
+class ItemCarteira {
+    -quantidade: double
+    -precoMedioCompra: double
+    +getValorTotalGasto(): double
+    +getValorTotalAtual(): double
+}
+
+class Transacao {
+    -id: String
+    -tipo: TipoTransacao
+    -quantidade: double
+    -preco: double
+    -instituicao: String
+}
+
+' === HERANÇA ===
+Ativo <|-- Acao
+Ativo <|-- FII
+Ativo <|-- Tesouro
+Ativo <|-- Stock
+Ativo <|-- Criptoativo
+
+Investidor <|-- PessoaFisica
+Investidor <|-- Institucional
+
+' === INTERFACES ===
+Acao ..|> AtivoNacional
+FII ..|> AtivoNacional
+Tesouro ..|> AtivoNacional
+Stock ..|> AtivoInternacional
+Criptoativo ..|> AtivoInternacional
+Investidor ..|> Investimento
+
+' === ASSOCIAÇÕES ===
+Investidor "1" *-- "1" Carteira
+Carteira "1" o-- "*" ItemCarteira
+ItemCarteira --> Ativo
+Transacao --> Ativo
+Transacao --> TipoTransacao
+PessoaFisica --> PerfilInvestidor
+
+@enduml
+
+
+' ============================================================
+' DIAGRAMA 2: ARQUITETURA DE SERVIÇOS (Opcional)
+' Cole separadamente se quiser mostrar a arquitetura completa
+' ============================================================
+
+@startuml DiagramaArquitetura
+
+skinparam classAttributeIconSize 0
+hide empty attributes
+
+title Diagrama de Arquitetura - Camadas do Sistema
+
+package "UI" #LightBlue {
+    class Menu {
+        +exibirMenuPrincipal()
+        -menuAtivos()
+        -menuInvestidores()
+        -menuInvestidorSelecionado()
+    }
+}
+
+package "Service" #LightGreen {
+    class TransacaoService {
+        +comprar()
+        +vender()
+    }
+    class AtivoService {
+        +cadastrar()
+        +editar()
+        +excluir()
+    }
+    class InvestidorService {
+        +cadastrar()
+        +excluir()
+        +buscarPorId()
+    }
+    class ValidacaoService {
+        +validarPermissaoInvestimento()
+        +validarQuantidadeAtivo()
+    }
+    class DiversificacaoService {
+        +calcularDistribuicaoRendaFixaVariavel()
+        +calcularDistribuicaoNacionalInternacional()
+    }
+    class ArquivoService {
+        +importarAtivos()
+        +importarInvestidores()
+        +importarTransacoes()
+    }
+    class RelatorioGerador {
+        +gerarRelatorioJSON()
+        +salvarRelatorioArquivo()
+    }
+    class DocumentoValidator {
+        {static} +validarCPF()
+        {static} +validarCNPJ()
+    }
+}
+
+package "Repository" #LightYellow {
+    class AtivoRepository {
+        +salvar()
+        +buscarPorTicker()
+        +listarTodos()
+    }
+    class InvestidorRepository {
+        +salvar()
+        +buscarPorId()
+        +listarTodos()
+    }
+    class TransacaoRepository {
+        +salvar()
+        +listarTodos()
+    }
+}
+
+package "Model" #LightPink {
+    abstract class Ativo
+    abstract class Investidor
+    class Carteira
+    class Transacao
+}
+
+package "Exception" #LightCoral {
+    class RegraNegocioException
+}
+
+' Dependências
+Menu --> TransacaoService
+Menu --> AtivoService
+Menu --> InvestidorService
+Menu --> DiversificacaoService
+Menu --> RelatorioGerador
+Menu --> ArquivoService
+
+TransacaoService --> ValidacaoService
+TransacaoService --> TransacaoRepository
+AtivoService --> AtivoRepository
+InvestidorService --> InvestidorRepository
+ArquivoService --> AtivoRepository
+ArquivoService --> InvestidorRepository
+
+ValidacaoService ..> RegraNegocioException : throws
+AtivoService ..> RegraNegocioException : throws
+DocumentoValidator ..> RegraNegocioException : throws
+
+@enduml

@@ -8,12 +8,42 @@
 \usepackage{titlesec}
 \usepackage{float}
 \usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+% Configuração de cores para código
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{javastyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    language=Java
+}
 
 % Ajuste de espaçamento dos títulos
-\titlespacing*{\section}{0pt}{10pt}{5pt}
-\titlespacing*{\subsection}{0pt}{8pt}{4pt}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{4pt}
 
-\title{\vspace{-2cm} \textbf{Relatório do Trabalho Prático: Sistema de Gestão de Carteiras Financeiras}}
+\title{\vspace{-2cm} \textbf{Relatório do Trabalho Prático:\\Sistema de Gestão de Carteiras de Investimento}}
 \author{
     \textbf{Disciplina:} Programação Orientada a Objetos \\
     \textbf{Professor:} Marcelo de Oliveira Costa Machado
@@ -25,59 +55,230 @@
 \maketitle
 \thispagestyle{empty}
 
-\section{Identificação e Detalhamento das Atividades}
+% ============================================================
+\section{Identificação do Grupo e Divisão de Atividades}
+% ============================================================
 
-Abaixo listam-se os integrantes do grupo e suas respectivas responsabilidades na implementação do trabalho.
+A tabela abaixo apresenta os integrantes do grupo e suas respectivas contribuições no desenvolvimento do sistema.
 
-\begin{table}[h]
+\begin{table}[H]
     \centering
-    \begin{tabular}{@{}ll@{}}
+    \begin{tabular}{@{}p{5cm}p{9cm}@{}}
         \toprule
         \textbf{Integrante (Matrícula)} & \textbf{Atividades Realizadas} \\ \midrule
-        Bernardo Grijó Fontes & Modelagem de classes, Menu de Investidores, Relatórios JSON. \\ \midrule
-        Rafael Rocha Ribeiro & Modelagem de Ativos, Movimentações, Interface em Console. \\ \bottomrule
+        Bernardo Grijó Fontes & Modelagem das classes de Investidor (PessoaFisica, Institucional), implementação do Menu de Investidores, serviços de validação, geração de relatórios JSON e testes unitários. \\ \midrule
+        Rafael Rocha Ribeiro & Modelagem das classes de Ativos (Ação, FII, Stock, Tesouro, Criptoativo), implementação de Movimentações, Carteira, interface em Console, importação de arquivos CSV e documentação. \\ \bottomrule
     \end{tabular}
+    \caption{Divisão de atividades entre os integrantes do grupo.}
 \end{table}
 
-\noindent \textbf{Repositório do Projeto:} O código fonte completo pode ser acessado em: \\
+\noindent \textbf{Repositório do Projeto:} \\
 \url{https://github.com/Rafaelrr5/SistemaFinanceiroOO}
 
-\section{Decisões de Implementação}
+% ============================================================
+\section{Descrição do Sistema}
+% ============================================================
 
-O sistema foi desenvolvido na linguagem \textbf{Java}, utilizando conceitos de orientação a objetos (herança, abstração, encapsulamento e interfaces). As principais decisões técnicas foram:
+O sistema desenvolvido é uma aplicação para \textbf{gestão de carteiras de investimento}, permitindo que investidores (pessoas físicas ou institucionais) gerenciem seus ativos financeiros. O sistema suporta diversos tipos de ativos: \textbf{Ações}, \textbf{FIIs} (Fundos de Investimento Imobiliário), \textbf{Stocks} (ações internacionais), \textbf{Criptoativos} e \textbf{Títulos do Tesouro}.
 
-\subsection{Estrutura de Pacotes}
-\begin{itemize}
-    \item \textbf{model}: classes de domínio (Ativo, Investidor, Movimentação, Carteira).
-    \item \textbf{service}: regras de negócio e validações.
-    \item \textbf{repository}: armazenamento em memória.
-    \item \textbf{ui}: interface em console.
-    \item \textbf{exception}: exceções personalizadas.
+As principais funcionalidades incluem:
+\begin{itemize}[noitemsep]
+    \item Cadastro, edição e exclusão de ativos e investidores;
+    \item Registro de movimentações de compra e venda;
+    \item Cálculo automático de preço médio de compra;
+    \item Conversão de ativos internacionais para Reais;
+    \item Geração de relatórios com análise de diversificação;
+    \item Importação de dados em lote via arquivos CSV.
 \end{itemize}
 
-\subsection{Validações}
-\begin{itemize}
-    \item Ativos não podem ter preço nulo ou negativo.
-    \item Investidores não podem ter patrimônio negativo.
-    \item Vendas não podem exceder a quantidade disponível na carteira.
-    \item Apenas investidores qualificados (patrimônio $\geq$ R\$1.000.000,00) podem operar ativos restritos.
+% ============================================================
+\section{Arquitetura e Estrutura de Pacotes}
+% ============================================================
+
+O projeto segue uma arquitetura em camadas, separando responsabilidades de forma clara e coesa:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}p{3.5cm}p{10.5cm}@{}}
+        \toprule
+        \textbf{Pacote} & \textbf{Descrição} \\ \midrule
+        \texttt{model} & Classes de domínio: Ativo e suas subclasses, Investidor e suas subclasses, Carteira, ItemCarteira, Transacao, enumerações (PerfilInvestidor, TipoTransacao). \\ \midrule
+        \texttt{service} & Regras de negócio: TransacaoService, ValidacaoService, AtivoService, InvestidorService, DiversificacaoService, RelatorioGerador, ArquivoService, DocumentoValidator. \\ \midrule
+        \texttt{repository} & Persistência em memória: AtivoRepository, InvestidorRepository, TransacaoRepository. \\ \midrule
+        \texttt{ui} & Interface com usuário: Menu (console interativo). \\ \midrule
+        \texttt{exception} & Exceções personalizadas: RegraNegocioException. \\ \bottomrule
+    \end{tabular}
+    \caption{Organização dos pacotes do sistema.}
+\end{table}
+
+% ============================================================
+\section{Conceitos de Orientação a Objetos Aplicados}
+% ============================================================
+
+\subsection{Herança e Abstração}
+
+A classe \texttt{Ativo} é \textbf{abstrata} e serve como base para os tipos específicos de ativos:
+
+\begin{itemize}[noitemsep]
+    \item \texttt{Acao} -- Ações brasileiras (renda variável, nacional)
+    \item \texttt{FII} -- Fundos Imobiliários (renda variável, nacional)
+    \item \texttt{Tesouro} -- Títulos do Tesouro Direto (renda fixa, nacional)
+    \item \texttt{Stock} -- Ações internacionais (renda variável, internacional)
+    \item \texttt{Criptoativo} -- Criptomoedas (renda variável, internacional)
 \end{itemize}
 
-\subsection{Relatórios}
-O sistema gera relatórios em formato \textbf{JSON}, contendo:
-\begin{itemize}
-    \item Valor total gasto e valor atual da carteira.
-    \item Percentuais de renda fixa/variável.
-    \item Percentuais de ativos nacionais/internacionais.
+Da mesma forma, \texttt{Investidor} é uma classe abstrata com duas especializações:
+\begin{itemize}[noitemsep]
+    \item \texttt{PessoaFisica} -- com perfil de investimento (Conservador, Moderado, Arrojado)
+    \item \texttt{Institucional} -- com razão social e sem restrições de movimentação
 \end{itemize}
 
-\section{Análise Comparativa das Funcionalidades}
+\subsection{Interfaces}
 
-O sistema foi testado com arquivos CSV de ativos e investidores. Observou-se:
-\begin{itemize}
-    \item \textbf{Cadastro em lote}: eficiente para grandes volumes de dados.
-    \item \textbf{Relatórios}: permitem análise clara da carteira.
-    \item \textbf{Movimentações}: respeitam regras de negócio e impedem inconsistências.
+Foram definidas três interfaces que garantem contratos específicos:
+
+\begin{itemize}[noitemsep]
+    \item \texttt{AtivoNacional} -- define o método \texttt{getPrecoEmReais()};
+    \item \texttt{AtivoInternacional} -- define \texttt{converterParaReais()} e \texttt{getFatorConversao()};
+    \item \texttt{Investimento} -- define \texttt{cadastrarInvestimento()} e \texttt{podeMovimentar()}.
 \end{itemize}
+
+\subsection{Encapsulamento}
+
+Todos os atributos das classes são \textbf{privados}, acessados exclusivamente por métodos \textit{getters} e \textit{setters}. Validações são realizadas nos setters e nos serviços antes de qualquer modificação de estado.
+
+\subsection{Polimorfismo}
+
+O método \texttt{podeMovimentar(Ativo)} é implementado de forma diferente em \texttt{PessoaFisica} (aplica restrições por perfil) e \texttt{Institucional} (sem restrições), permitindo que o sistema trate investidores de forma uniforme.
+
+% ============================================================
+\section{Regras de Negócio Implementadas}
+% ============================================================
+
+\subsection{Validações de Ativos}
+\begin{itemize}[noitemsep]
+    \item Ticker não pode ser nulo ou vazio;
+    \item Preço deve ser maior que zero;
+    \item Ao excluir um ativo, ele é removido de todas as carteiras de investidores.
+\end{itemize}
+
+\subsection{Validações de Investidores}
+\begin{itemize}[noitemsep]
+    \item Nome e CPF/CNPJ são obrigatórios;
+    \item CPF deve ter 11 dígitos e CNPJ deve ter 14 dígitos (validação de formato);
+    \item Patrimônio não pode ser negativo;
+    \item Ao excluir um investidor, sua carteira também é removida.
+\end{itemize}
+
+\subsection{Regras de Movimentação}
+\begin{itemize}[noitemsep]
+    \item \textbf{Criptoativos}: apenas investidores com perfil \textit{Arrojado};
+    \item \textbf{Stocks}: perfil \textit{Moderado} ou \textit{Arrojado};
+    \item \textbf{Ativos qualificados}: apenas investidores com patrimônio $\geq$ R\$ 1.000.000,00;
+    \item \textbf{Institucional}: pode movimentar qualquer ativo sem restrições;
+    \item \textbf{Vendas}: não podem exceder a quantidade disponível na carteira.
+\end{itemize}
+
+\subsection{Cálculo de Preço Médio}
+
+Ao comprar um ativo já existente na carteira, o preço médio é recalculado:
+\[
+\text{PM}_{\text{novo}} = \frac{(\text{Qtd}_{\text{antiga}} \times \text{PM}_{\text{antigo}}) + (\text{Qtd}_{\text{nova}} \times \text{Preço}_{\text{compra}})}{\text{Qtd}_{\text{antiga}} + \text{Qtd}_{\text{nova}}}
+\]
+
+% ============================================================
+\section{Tratamento de Exceções}
+% ============================================================
+
+Foi criada a exceção personalizada \texttt{RegraNegocioException} (estende \texttt{RuntimeException}) para tratar violações de regras de negócio de forma clara e específica.
+
+Exemplos de uso:
+\begin{itemize}[noitemsep]
+    \item Tentativa de venda maior que a quantidade disponível;
+    \item Investidor conservador tentando comprar criptoativos;
+    \item Cadastro de ativo com preço negativo ou zerado;
+    \item CPF/CNPJ com formato inválido.
+\end{itemize}
+
+% ============================================================
+\section{Funcionalidades de Relatório}
+% ============================================================
+
+O sistema gera relatórios em formato \textbf{JSON} contendo:
+
+\begin{itemize}[noitemsep]
+    \item Dados do investidor (nome, CPF/CNPJ, patrimônio);
+    \item Lista de ativos na carteira com quantidade, valor gasto e valor atual;
+    \item Valor total gasto e valor total atual;
+    \item Percentual de renda fixa vs. renda variável;
+    \item Percentual de ativos nacionais vs. internacionais;
+    \item Data e hora de geração do relatório.
+\end{itemize}
+
+% ============================================================
+\section{Diagramas UML}
+% ============================================================
+
+Foram elaborados dois diagramas UML para representar o sistema: um \textbf{Diagrama de Modelo de Domínio} e um \textbf{Diagrama de Arquitetura em Camadas}. O código-fonte PlantUML está disponível no arquivo \texttt{plantUML.txt}.
+
+\subsection{Diagrama 1: Modelo de Domínio}
+
+Este diagrama apresenta as classes de domínio do sistema, suas heranças, interfaces implementadas e associações principais.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{modelodedominio.png}
+    \caption{Diagrama de Modelo de Domínio}
+\end{figure}
+
+\textbf{Elementos principais do diagrama:}
+\begin{itemize}[noitemsep]
+    \item \textbf{Hierarquia de Ativos:} \texttt{Ativo} (abstrata) $\rightarrow$ Acao, FII, Tesouro, Stock, Criptoativo
+    \item \textbf{Hierarquia de Investidores:} \texttt{Investidor} (abstrata) $\rightarrow$ PessoaFisica, Institucional
+    \item \textbf{Interfaces:} AtivoNacional, AtivoInternacional, Investimento
+    \item \textbf{Associações:} Investidor--Carteira (composição), Carteira--ItemCarteira (agregação)
+\end{itemize}
+
+\subsection{Diagrama 2: Arquitetura em Camadas}
+
+Este diagrama apresenta a organização do sistema em camadas, seguindo o padrão de arquitetura em três camadas.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{arquitetura.png}
+    \caption{Diagrama de Arquitetura em Camadas}
+\end{figure}
+
+\textbf{Fluxo de dependências:}
+\[
+\text{Menu (UI)} \rightarrow \text{Services} \rightarrow \text{Repositories} \rightarrow \text{Model}
+\]
+
+O código-fonte PlantUML dos diagramas está disponível no arquivo \texttt{plantUML.txt}.
+
+% ============================================================
+\section{Testes e Validação}
+% ============================================================
+
+Foram implementados testes unitários utilizando \textbf{JUnit 5} para validar:
+\begin{itemize}[noitemsep]
+    \item Criação e manipulação de ativos;
+    \item Regras de permissão de movimentação por perfil;
+    \item Operações de compra e venda na carteira;
+    \item Cálculos de diversificação (renda fixa/variável, nacional/internacional);
+    \item Validação de documentos (CPF/CNPJ).
+\end{itemize}
+
+O sistema foi testado com arquivos CSV de exemplo contendo ações, FIIs, stocks, criptoativos e títulos do tesouro, demonstrando o correto funcionamento da importação em lote.
+
+% ============================================================
+\section{Conclusão}
+% ============================================================
+
+O sistema desenvolvido atende integralmente aos requisitos especificados, aplicando de forma consistente os princípios de Orientação a Objetos: \textbf{herança}, \textbf{abstração}, \textbf{encapsulamento}, \textbf{polimorfismo} e \textbf{interfaces}.
+
+A arquitetura em camadas (model-service-repository-ui) facilita a manutenção e extensão do código, enquanto o tratamento de exceções personalizadas garante mensagens claras ao usuário em caso de erros de regra de negócio.
+
+O código está disponível no repositório GitHub com documentação completa, permitindo fácil compreensão e replicação do projeto.
 
 \end{document}
