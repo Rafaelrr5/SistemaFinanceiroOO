@@ -67,7 +67,7 @@ public class AtivoRepository {
     }
 
     private void carregarCriptoativos() {
-        try (BufferedReader br = new BufferedReader(new FileReader("criptoativo.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/criptoativo.csv"))) {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
@@ -82,17 +82,36 @@ public class AtivoRepository {
                     double precoUSD = parseDouble(dados[2].replace(",", "."));
                     String algoritmo = dados[3].trim();
                     double qtdMaxima = parseDouble(dados[4].replace(",", "."));
-                    double precoBRL = precoUSD * 5.39;
-                    ativos.add(new Criptoativo(ticker, nome, precoBRL, algoritmo, qtdMaxima));
+                    ativos.add(new Criptoativo(ticker, nome, precoUSD, algoritmo, qtdMaxima, 5.39));
                 }
             }
         } catch (IOException e) {
-            System.out.println("Erro ao carregar criptoativos: " + e.getMessage());
+            try (BufferedReader br = new BufferedReader(new FileReader("criptoativo.csv"))) {
+                 String linha;
+                 boolean primeira = true;
+                 while ((linha = br.readLine()) != null) {
+                     if (primeira) {
+                         primeira = false;
+                         continue;
+                     }
+                     String[] dados = linha.split(";");
+                     if (dados.length >= 5) {
+                         String ticker = dados[0].trim();
+                         String nome = dados[1].trim();
+                         double precoUSD = parseDouble(dados[2].replace(",", "."));
+                         String algoritmo = dados[3].trim();
+                         double qtdMaxima = parseDouble(dados[4].replace(",", "."));
+                         ativos.add(new Criptoativo(ticker, nome, precoUSD, algoritmo, qtdMaxima, 5.39));
+                     }
+                 }
+            } catch (IOException ex) {
+                System.out.println("Erro ao carregar criptoativos: " + e.getMessage());
+            }
         }
     }
 
     private void carregarStocks() {
-        try (BufferedReader br = new BufferedReader(new FileReader("stock.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/stock.csv"))) {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
@@ -107,12 +126,31 @@ public class AtivoRepository {
                     double precoUSD = parseDouble(dados[2].replace(",", "."));
                     String bolsa = dados[3].trim();
                     String setor = dados[4].trim();
-                    double precoBRL = precoUSD * 5.39;
-                    ativos.add(new Stock(ticker, nome, precoBRL, bolsa, setor));
+                    ativos.add(new Stock(ticker, nome, precoUSD, bolsa, setor, 5.39));
                 }
             }
         } catch (IOException e) {
-            System.out.println("Erro ao carregar stocks: " + e.getMessage());
+             try (BufferedReader br = new BufferedReader(new FileReader("stock.csv"))) {
+                String linha;
+                boolean primeira = true;
+                while ((linha = br.readLine()) != null) {
+                    if (primeira) {
+                        primeira = false;
+                        continue;
+                    }
+                    String[] dados = linha.split(";");
+                    if (dados.length >= 5) {
+                        String ticker = dados[0].trim();
+                        String nome = dados[1].trim();
+                        double precoUSD = parseDouble(dados[2].replace(",", "."));
+                        String bolsa = dados[3].trim();
+                        String setor = dados[4].trim();
+                        ativos.add(new Stock(ticker, nome, precoUSD, bolsa, setor, 5.39));
+                    }
+                }
+            } catch (IOException ex) {
+                System.out.println("Erro ao carregar stocks: " + e.getMessage());
+            }
         }
     }
 

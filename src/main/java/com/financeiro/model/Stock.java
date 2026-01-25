@@ -4,8 +4,8 @@ public class Stock extends Ativo {
     private String bolsaNegociacao;
     private String setor;
 
-    public Stock(String ticker, String nome, double preco, String bolsaNegociacao, String setor) {
-        super(ticker, nome, preco);
+    public Stock(String ticker, String nome, double preco, String bolsaNegociacao, String setor, double fatorConversao) {
+        super(ticker, nome, preco, false, fatorConversao); // Stock internacional
         this.bolsaNegociacao = bolsaNegociacao;
         this.setor = setor;
     }

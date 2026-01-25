@@ -6,7 +6,7 @@ public class FII extends Ativo {
     private double taxaAdministracao;
 
     public FII(String ticker, String nome, double preco, String setor, double ultimoDividendo, double taxaAdministracao) {
-        super(ticker, nome, preco);
+        super(ticker, nome, preco, false, 1.0); // FIIs não qualificados por padrão, nacionais
         this.setor = setor;
         this.ultimoDividendo = ultimoDividendo;
         this.taxaAdministracao = taxaAdministracao;
@@ -30,6 +30,10 @@ public class FII extends Ativo {
 
     public double getTaxaAdministracao() {
         return taxaAdministracao;
+    }
+
+    public String getTaxaAdministracaoFormatada() {
+        return taxaAdministracao + "%";
     }
 
     public void setTaxaAdministracao(double taxaAdministracao) {

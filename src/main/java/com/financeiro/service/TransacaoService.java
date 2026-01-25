@@ -2,6 +2,7 @@ package com.financeiro.service;
 
 import com.financeiro.model.Ativo;
 import com.financeiro.model.Carteira;
+import com.financeiro.model.Investidor;
 import com.financeiro.model.TipoTransacao;
 import com.financeiro.model.Transacao;
 import com.financeiro.repository.TransacaoRepository;
@@ -17,21 +18,29 @@ public class TransacaoService {
         this.validacaoService = validacaoService;
     }
 
-    public void comprar(Carteira carteira, Ativo ativo, int quantidade, double preco) throws Exception {
+    public void comprar(Investidor investidor, Ativo ativo, double quantidade, double preco) throws Exception {
         validacaoService.validarQuantidadePositiva(quantidade);
+        validacaoService.validarPermissaoInvestimento(investidor, ativo);
+        
+        Carteira carteira = investidor.getCarteira();
         double valorTotal = quantidade * preco;
         validacaoService.validarSaldoSuficiente(carteira, valorTotal);
 
         carteira.setSaldo(carteira.getSaldo() - valorTotal);
-        carteira.adicionarAtivo(ativo, quantidade);
+        carteira.adicionarAtivo(ativo, quantidade, preco);
 
         Transacao transacao = new Transacao(TipoTransacao.COMPRA, LocalDateTime.now(), ativo, quantidade, preco);
         repository.salvar(transacao);
     }
 
-    public void vender(Carteira carteira, Ativo ativo, int quantidade, double preco) throws Exception {
+    public void vender(Investidor investidor, Ativo ativo, double quantidade, double preco) throws Exception {
         validacaoService.validarQuantidadePositiva(quantidade);
+        Carteira carteira = investidor.getCarteira();
         validacaoService.validarQuantidadeAtivo(carteira, ativo, quantidade);
+
+        // Venda também pode ter restrições? PDF diz "Ativos qualificados só podem ser movimentados..."
+        // Movimentação inclui venda.
+        validacaoService.validarPermissaoInvestimento(investidor, ativo);
 
         double valorTotal = quantidade * preco;
         carteira.setSaldo(carteira.getSaldo() + valorTotal);

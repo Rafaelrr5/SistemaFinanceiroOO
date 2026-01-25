@@ -5,7 +5,7 @@ public class Tesouro extends Ativo {
     private String vencimento;
 
     public Tesouro(String ticker, String nome, double preco, String tipoRendimento, String vencimento) {
-        super(ticker, nome, preco);
+        super(ticker, nome, preco, false, 1.0); // Tesouro não qualificado, nacional
         this.tipoRendimento = tipoRendimento;
         this.vencimento = vencimento;
     }

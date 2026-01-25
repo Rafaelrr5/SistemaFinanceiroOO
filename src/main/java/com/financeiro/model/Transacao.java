@@ -6,11 +6,11 @@ public class Transacao {
     private TipoTransacao tipo;
     private LocalDateTime data;
     private Ativo ativo;
-    private int quantidade;
+    private double quantidade;
     private double preco;
     private double valorTotal;
 
-    public Transacao(TipoTransacao tipo, LocalDateTime data, Ativo ativo, int quantidade, double preco) {
+    public Transacao(TipoTransacao tipo, LocalDateTime data, Ativo ativo, double quantidade, double preco) {
         this.tipo = tipo;
         this.data = data;
         this.ativo = ativo;
@@ -43,11 +43,14 @@ public class Transacao {
         this.ativo = ativo;
     }
 
-    public int getQuantidade() {
+    public double getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(int quantidade) {
+    public void setQuantidade(double quantidade) {
+        this.quantidade = quantidade;
+        this.valorTotal = this.quantidade * this.preco;
+    }
         this.quantidade = quantidade;
         this.valorTotal = this.quantidade * this.preco;
     }

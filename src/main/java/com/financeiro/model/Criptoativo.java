@@ -4,8 +4,8 @@ public class Criptoativo extends Ativo {
     private String algoritmoConsenso;
     private double quantidadeMaxima;
 
-    public Criptoativo(String ticker, String nome, double preco, String algoritmoConsenso, double quantidadeMaxima) {
-        super(ticker, nome, preco);
+    public Criptoativo(String ticker, String nome, double preco, String algoritmoConsenso, double quantidadeMaxima, double fatorConversao) {
+        super(ticker, nome, preco, false, fatorConversao); // Cripto internacional
         this.algoritmoConsenso = algoritmoConsenso;
         this.quantidadeMaxima = quantidadeMaxima;
     }

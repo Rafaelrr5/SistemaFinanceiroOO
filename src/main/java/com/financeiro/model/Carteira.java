@@ -8,7 +8,7 @@ public class Carteira {
     private String nome;
     private LocalDate dataCriacao;
     private double saldo;
-    private Map<Ativo, Integer> ativos;
+    private Map<Ativo, ItemCarteira> ativos;
 
     public Carteira(String nome) {
         this.nome = nome;
@@ -41,36 +41,53 @@ public class Carteira {
         this.saldo = saldo;
     }
 
-    public Map<Ativo, Integer> getAtivos() {
+    public Map<Ativo, ItemCarteira> getAtivos() {
         return ativos;
     }
 
-    public void setAtivos(Map<Ativo, Integer> ativos) {
+    public void setAtivos(Map<Ativo, ItemCarteira> ativos) {
         this.ativos = ativos;
     }
 
-    public void adicionarAtivo(Ativo ativo, int quantidade) {
-        this.ativos.put(ativo, this.ativos.getOrDefault(ativo, 0) + quantidade);
+    public void adicionarAtivo(Ativo ativo, double quantidade, double precoCompra) {
+        if (ativos.containsKey(ativo)) {
+            ItemCarteira item = ativos.get(ativo);
+            double qtdAntiga = item.getQuantidade();
+            double precoMedioAntigo = item.getPrecoMedioCompra();
+            
+            // Novo Preço Médio = ((QtdAntiga * PrecoMedioAntigo) + (QtdNova * PrecoCompra)) / (QtdTotal)
+            double novoTotalQuantidade = qtdAntiga + quantidade;
+            double novoPrecoMedio = ((qtdAntiga * precoMedioAntigo) + (quantidade * precoCompra)) / novoTotalQuantidade;
+            
+            item.setQuantidade(novoTotalQuantidade);
+            item.setPrecoMedioCompra(novoPrecoMedio);
+        } else {
+            ativos.put(ativo, new ItemCarteira(ativo, quantidade, precoCompra));
+        }
     }
     
-    public void removerAtivo(Ativo ativo, int quantidade) {
+    public void removerAtivo(Ativo ativo, double quantidade) {
         if (this.ativos.containsKey(ativo)) {
-            int qtdAtual = this.ativos.get(ativo);
+            ItemCarteira item = this.ativos.get(ativo);
+            double qtdAtual = item.getQuantidade();
             if (qtdAtual > quantidade) {
-                this.ativos.put(ativo, qtdAtual - quantidade);
+                item.setQuantidade(qtdAtual - quantidade);
             } else {
                 this.ativos.remove(ativo);
             }
         }
     }
 
+    public double getValorTotalCarteira() {
+        return saldo + ativos.values().stream().mapToDouble(ItemCarteira::getValorTotalAtual).sum();
+    }
+
     @Override
     public String toString() {
         return "Carteira{" +
                 "nome='" + nome + '\'' +
-                ", dataCriacao=" + dataCriacao +
                 ", saldo=" + saldo +
-                ", ativos=" + ativos +
+                ", qtdAtivos=" + ativos.size() +
                 '}';
     }
 }

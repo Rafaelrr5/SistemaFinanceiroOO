@@ -1,19 +1,17 @@
 package com.financeiro.model;
 
 public class Acao extends Ativo {
-    private boolean qualificado;
 
     public Acao(String ticker, String nome, double preco, boolean qualificado) {
-        super(ticker, nome, preco);
-        this.qualificado = qualificado;
+        super(ticker, nome, preco, qualificado, 1.0); // Fator conversão 1.0 para nacionais
     }
 
-    public boolean isQualificado() {
-        return qualificado;
-    }
-
-    public void setQualificado(boolean qualificado) {
-        this.qualificado = qualificado;
+    public String getTipoAcao() {
+        String ticker = getTicker();
+        if (ticker.endsWith("3")) return "Ordinária";
+        if (ticker.endsWith("4") || ticker.endsWith("5") || ticker.endsWith("6")) return "Preferencial";
+        if (ticker.endsWith("11")) return "Unit";
+        return "Desconhecido";
     }
 
     @Override
@@ -22,7 +20,8 @@ public class Acao extends Ativo {
                 "ticker='" + getTicker() + '\'' +
                 ", nome='" + getNome() + '\'' +
                 ", preco=" + getPreco() +
-                ", qualificado=" + qualificado +
+                ", qualificado=" + isQualificado() +
+                ", tipo='" + getTipoAcao() + '\'' +
                 '}';
     }
 }
