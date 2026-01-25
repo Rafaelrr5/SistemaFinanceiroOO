@@ -24,6 +24,12 @@ public class ValidacaoService {
         }
     }
 
+    public void validarPrecoPositivo(double preco) throws RegraNegocioException {
+        if (preco <= 0) {
+            throw new RegraNegocioException("O preço deve ser maior que zero.");
+        }
+    }
+
     public void validarPermissaoInvestimento(Investidor investidor, Ativo ativo) throws RegraNegocioException {
         if (investidor instanceof Institucional) {
             return; // Institucional pode tudo

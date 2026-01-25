@@ -18,35 +18,45 @@ public class TransacaoService {
         this.validacaoService = validacaoService;
     }
 
+    /**
+     * Registra uma compra de ativo para o investidor.
+     * Valida permissões de perfil antes de executar.
+     * A compra adiciona o ativo à carteira e registra a transação.
+     */
     public void comprar(Investidor investidor, Ativo ativo, double quantidade, double preco, String instituicao) throws Exception {
         validacaoService.validarQuantidadePositiva(quantidade);
+        validacaoService.validarPrecoPositivo(preco);
         validacaoService.validarPermissaoInvestimento(investidor, ativo);
         
         Carteira carteira = investidor.getCarteira();
-        double valorTotal = quantidade * preco;
-        validacaoService.validarSaldoSuficiente(carteira, valorTotal);
-
-        carteira.setSaldo(carteira.getSaldo() - valorTotal);
+        
+        // Adiciona o ativo à carteira (compra)
         carteira.adicionarAtivo(ativo, quantidade, preco);
 
+        // Registra a transação
         String id = java.util.UUID.randomUUID().toString();
         Transacao transacao = new Transacao(id, TipoTransacao.COMPRA, LocalDateTime.now(), ativo, quantidade, preco, instituicao);
         repository.salvar(transacao);
     }
 
+    /**
+     * Registra uma venda de ativo para o investidor.
+     * Valida quantidade disponível antes de executar.
+     * A venda não pode exceder a quantidade que o investidor possui.
+     */
     public void vender(Investidor investidor, Ativo ativo, double quantidade, double preco, String instituicao) throws Exception {
         validacaoService.validarQuantidadePositiva(quantidade);
+        validacaoService.validarPrecoPositivo(preco);
         Carteira carteira = investidor.getCarteira();
         validacaoService.validarQuantidadeAtivo(carteira, ativo, quantidade);
 
-        // Venda também pode ter restrições? PDF diz "Ativos qualificados só podem ser movimentados..."
-        // Movimentação inclui venda.
+        // Validação de permissão também para venda (conforme PDF: "movimentação" inclui compra e venda)
         validacaoService.validarPermissaoInvestimento(investidor, ativo);
 
-        double valorTotal = quantidade * preco;
-        carteira.setSaldo(carteira.getSaldo() + valorTotal);
+        // Remove o ativo da carteira (venda)
         carteira.removerAtivo(ativo, quantidade);
 
+        // Registra a transação
         String id = java.util.UUID.randomUUID().toString();
         Transacao transacao = new Transacao(id, TipoTransacao.VENDA, LocalDateTime.now(), ativo, quantidade, preco, instituicao);
         repository.salvar(transacao);

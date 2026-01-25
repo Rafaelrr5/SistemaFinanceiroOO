@@ -1,6 +1,11 @@
 package com.financeiro.model;
 
-public class Tesouro extends Ativo {
+/**
+ * Representa um título do Tesouro Direto.
+ * Tesouro são ativos NACIONAIS de RENDA FIXA.
+ * Possuem: tipo de rendimento (Selic, Prefixado, IPCA+) e data de vencimento.
+ */
+public class Tesouro extends Ativo implements AtivoNacional {
     private String tipoRendimento;
     private String vencimento;
 
@@ -8,6 +13,11 @@ public class Tesouro extends Ativo {
         super(ticker, nome, preco, false, 1.0); // Tesouro não qualificado, nacional
         this.tipoRendimento = tipoRendimento;
         this.vencimento = vencimento;
+    }
+
+    @Override
+    public double getPrecoEmReais() {
+        return getPreco(); // Já está em reais
     }
 
     public String getTipoRendimento() {

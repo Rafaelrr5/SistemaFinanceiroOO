@@ -1,9 +1,19 @@
 package com.financeiro.model;
 
-public class Acao extends Ativo {
+/**
+ * Representa uma Ação brasileira.
+ * Ações são ativos NACIONAIS de RENDA VARIÁVEL.
+ * O tipo da ação (ordinária, preferencial, unit) é definido pelo ticker.
+ */
+public class Acao extends Ativo implements AtivoNacional {
 
     public Acao(String ticker, String nome, double preco, boolean qualificado) {
         super(ticker, nome, preco, qualificado, 1.0); // Fator conversão 1.0 para nacionais
+    }
+
+    @Override
+    public double getPrecoEmReais() {
+        return getPreco(); // Já está em reais
     }
 
     public String getTipoAcao() {

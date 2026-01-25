@@ -2,7 +2,12 @@ package com.financeiro.model;
 
 import java.time.LocalDate;
 
-public abstract class Investidor {
+/**
+ * Classe abstrata que representa um investidor.
+ * Implementa a interface Investimento conforme especificação:
+ * "Todo investidor obrigatoriamente deve possuir a capacidade de cadastrar investimento."
+ */
+public abstract class Investidor implements Investimento {
     private String nome;
     private String identificador; // CPF ou CNPJ
     private String telefone;
