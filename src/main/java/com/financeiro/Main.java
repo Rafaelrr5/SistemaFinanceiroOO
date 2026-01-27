@@ -9,17 +9,15 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== Inicializando Sistema de Gestão de Carteiras ===");
         
-        // Repositórios que serão compartilhados
         AtivoRepository ativoRepository = new AtivoRepository();
         InvestidorRepository investidorRepository = new InvestidorRepository();
         
-        // Carrega ativos dos arquivos CSV na inicialização (Seção 1 do PDF)
+
         ArquivoService arquivoService = new ArquivoService(ativoRepository, investidorRepository);
         carregarAtivosIniciais(arquivoService);
         
         System.out.println("Sistema iniciado com sucesso!\n");
         
-        // Inicia o menu passando os repositórios já carregados
         Menu menu = new Menu(ativoRepository, investidorRepository);
         menu.exibirMenuPrincipal();
     }

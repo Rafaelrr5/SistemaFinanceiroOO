@@ -10,10 +10,6 @@ import java.time.LocalDate;
 
 public class Menu {
 
-    /**
-     * Lê um inteiro do usuário com tratamento de erro.
-     * Continua pedindo até receber um valor válido.
-     */
     private int lerInteiro(String prompt) {
         while (true) {
             try {
@@ -28,9 +24,6 @@ public class Menu {
         }
     }
 
-    /**
-     * Lê um inteiro com valor padrão em caso de entrada vazia.
-     */
     private int lerInteiroOpcional(String prompt, int padrao) {
         if (prompt != null && !prompt.isEmpty()) {
             System.out.print(prompt);
@@ -47,9 +40,7 @@ public class Menu {
         }
     }
 
-    /**
-     * Lê um número decimal do usuário com tratamento de erro.
-     */
+
     private double lerDouble(String prompt) {
         while (true) {
             try {
@@ -64,9 +55,6 @@ public class Menu {
         }
     }
 
-    /**
-     * Lê um booleano do usuário com tratamento de erro.
-     */
     private boolean lerBoolean(String prompt) {
         while (true) {
             if (prompt != null && !prompt.isEmpty()) {
