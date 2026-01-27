@@ -1,0 +1,11 @@
+TIPO;NOME;IDENTIFICADOR;TELEFONE;EMAIL;ENDERECO;PATRIMONIO;PERFIL_OU_RAZAO
+PF;Ana Costa;52998224725;11988881111;ana.costa@email.com;Rua das Flores, 100, Jardins, SP;75000.00;CONSERVADOR
+PF;Bruno Lima;11144477735;21977772222;bruno.lima@email.com;Av Brasil, 500, Centro, RJ;250000.00;MODERADO
+PF;Carla Souza;38748911802;31966663333;carla.souza@email.com;Rua Minas, 200, Savassi, BH;1500000.00;ARROJADO
+PJ;Tech Solutions Ltda;11222333000181;11955554444;contato@techsolutions.com;Av Paulista, 1500, SP;8000000.00;Tech Solutions Ltda
+PJ;Investimentos ABC;11444777000161;21944445555;contato@abc.invest.com;Av Rio Branco, 300, RJ;15000000.00;ABC Investimentos S.A.
+PF;Daniel Oliveira;64743299040;41933336666;daniel@email.com;Rua Curitiba, 300, Centro, PR;120000.00;MODERADO
+PF;Elena Santos;93749104073;51922227777;elena.santos@email.com;Av Porto Alegre, 800, RS;2000000.00;ARROJADO
+PJ;Global Trading SA;92657042000156;11911118888;trading@global.com;Av Nacoes, 1000, SP;50000000.00;Global Trading S.A.
+PF;Fernando Mendes;48571648019;85911119999;fernando@email.com;Rua Fortaleza, 400, CE;95000.00;CONSERVADOR
+PF;Gabriela Rocha;82418934070;71900001111;gabriela@email.com;Av Salvador, 600, BA;450000.00;MODERADO

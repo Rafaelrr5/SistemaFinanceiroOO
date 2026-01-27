@@ -23,17 +23,31 @@ public class ArquivoService {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
-                if (primeira) { primeira = false; continue; } // Ignora header
-                if (linha.trim().isEmpty()) continue;
+                if (primeira) {
+                    primeira = false;
+                    continue;
+                } // Ignora header
+                if (linha.trim().isEmpty())
+                    continue;
 
                 Ativo ativo = null;
                 try {
                     switch (tipoAtivo.toUpperCase()) {
-                        case "ACAO": ativo = parseAcao(linha); break;
-                        case "FII": ativo = parseFII(linha); break;
-                        case "STOCK": ativo = parseStock(linha); break;
-                        case "TESOURO": ativo = parseTesouro(linha); break;
-                        case "CRIPTO": ativo = parseCripto(linha); break;
+                        case "ACAO":
+                            ativo = parseAcao(linha);
+                            break;
+                        case "FII":
+                            ativo = parseFII(linha);
+                            break;
+                        case "STOCK":
+                            ativo = parseStock(linha);
+                            break;
+                        case "TESOURO":
+                            ativo = parseTesouro(linha);
+                            break;
+                        case "CRIPTO":
+                            ativo = parseCripto(linha);
+                            break;
                     }
                     if (ativo != null) {
                         ativoRepository.salvar(ativo);
@@ -50,8 +64,12 @@ public class ArquivoService {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
-                if (primeira) { primeira = false; continue; }
-                if (linha.trim().isEmpty()) continue;
+                if (primeira) {
+                    primeira = false;
+                    continue;
+                }
+                if (linha.trim().isEmpty())
+                    continue;
 
                 try {
                     Investidor investidor = parseInvestidor(linha);
@@ -64,19 +82,25 @@ public class ArquivoService {
             }
         }
     }
-    
-    public void importarTransacoes(String caminhoArquivo, Investidor investidor, TransacaoService transacaoService) throws IOException {
+
+    public void importarTransacoes(String caminhoArquivo, Investidor investidor, TransacaoService transacaoService)
+            throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
             String linha;
             boolean primeira = true;
             while ((linha = br.readLine()) != null) {
-                if (primeira) { primeira = false; continue; }
-                if (linha.trim().isEmpty()) continue;
+                if (primeira) {
+                    primeira = false;
+                    continue;
+                }
+                if (linha.trim().isEmpty())
+                    continue;
 
                 try {
                     // Formato esperado: Ticker;Tipo(C/V);Quantidade;Preco;Instituicao
                     String[] dados = linha.split(";");
-                    if (dados.length < 5) continue;
+                    if (dados.length < 5)
+                        continue;
 
                     String ticker = dados[0].trim();
                     String tipo = dados[1].trim().toUpperCase();
@@ -104,55 +128,85 @@ public class ArquivoService {
         }
     }
 
+    /**
+     * Método auxiliar para converter string numérica de forma robusta.
+     * Trata casos como: "-", valores vazios, separadores de milhar (1.234,56).
+     */
+    private double parseNumber(String valor) {
+        if (valor == null || valor.trim().isEmpty() || valor.trim().equals("-")) {
+            return 0.0;
+        }
+        String limpo = valor.trim();
+        // Remove pontos de milhar (ex: 1.234,56 -> 1234,56)
+        // Detecta se tem vírgula como decimal: remove pontos antes da vírgula
+        if (limpo.contains(",")) {
+            limpo = limpo.replace(".", "").replace(",", ".");
+        }
+        return Double.parseDouble(limpo);
+    }
+
+    /**
+     * Obtém valor do array de forma segura, retornando string vazia se índice
+     * inválido.
+     */
+    private String getField(String[] dados, int index) {
+        if (index >= 0 && index < dados.length) {
+            return dados[index].trim();
+        }
+        return "";
+    }
+
     // Método auxiliar de parsing (simplificado)
     private Ativo parseAcao(String linha) {
         String[] dados = linha.split(";");
-        String ticker = dados[0].trim();
-        String nome = dados[1].trim();
-        double preco = Double.parseDouble(dados[2].replace(",", "."));
-        boolean qualificado = "1".equals(dados[3].trim());
+        String ticker = getField(dados, 0);
+        String nome = getField(dados, 1);
+        double preco = parseNumber(getField(dados, 2));
+        boolean qualificado = "1".equals(getField(dados, 3));
         return new Acao(ticker, nome, preco, qualificado);
     }
 
     private Ativo parseFII(String linha) {
         String[] dados = linha.split(";");
-        String ticker = dados[0].trim();
-        String nome = dados[1].trim();
-        String setor = dados[2].trim();
-        double preco = Double.parseDouble(dados[3].replace(",", "."));
-        double div = Double.parseDouble(dados[4].replace(",", "."));
-        double taxa = Double.parseDouble(dados[5].replace(",", "."));
+        String ticker = getField(dados, 0);
+        String nome = getField(dados, 1);
+        String setor = getField(dados, 2);
+        double preco = parseNumber(getField(dados, 3));
+        double div = parseNumber(getField(dados, 4));
+        double taxa = parseNumber(getField(dados, 5));
         return new FII(ticker, nome, preco, setor, div, taxa);
     }
-    
+
     private Ativo parseStock(String linha) {
         String[] dados = linha.split(";");
         // Ticker;Nome;Preco;Bolsa;Setor
-        return new Stock(dados[0].trim(), dados[1].trim(), 
-            Double.parseDouble(dados[2].replace(",", ".")), 
-            dados[3].trim(), dados[4].trim(), 5.39); // Fixo 5.39 conforme PDF
+        return new Stock(getField(dados, 0), getField(dados, 1),
+                parseNumber(getField(dados, 2)),
+                getField(dados, 3), getField(dados, 4), 5.39); // Fixo 5.39 conforme PDF
     }
-    
+
     private Ativo parseCripto(String linha) {
         String[] dados = linha.split(";");
-        // Ticker;Nome;Preco;Algoritmo;QtdMax
-        return new Criptoativo(dados[0].trim(), dados[1].trim(), 
-            Double.parseDouble(dados[2].replace(",", ".")), 
-            dados[3].trim(), Double.parseDouble(dados[4].replace(",", ".")), 5.39);
+        // Ticker;Nome;Preco;Algoritmo;QtdMax (QtdMax pode estar ausente)
+        double qtdMax = dados.length > 4 ? parseNumber(getField(dados, 4)) : 21000000.0; // Default: supply do Bitcoin
+        return new Criptoativo(getField(dados, 0), getField(dados, 1),
+                parseNumber(getField(dados, 2)),
+                getField(dados, 3), qtdMax, 5.39);
     }
-    
+
     private Ativo parseTesouro(String linha) {
         String[] dados = linha.split(";");
         // Ticker;Nome;Preco;Tipo;Vencimento
-        return new Tesouro(dados[0].trim(), dados[1].trim(), 
-            Double.parseDouble(dados[2].replace(",", ".")), 
-            dados[3].trim(), dados[4].trim());
+        return new Tesouro(getField(dados, 0), getField(dados, 1),
+                parseNumber(getField(dados, 2)),
+                getField(dados, 3), getField(dados, 4));
     }
 
     private Investidor parseInvestidor(String linha) {
         String[] dados = linha.split(";");
         // TIPO;NOME;IDENTIFICADOR;TELEFONE;EMAIL;ENDERECO;PATRIMONIO;PERFIL_OU_RAZAO
-        if (dados.length < 8) return null;
+        if (dados.length < 8)
+            return null;
 
         String tipo = dados[0].trim();
         String nome = dados[1].trim();

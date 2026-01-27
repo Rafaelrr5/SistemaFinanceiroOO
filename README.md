@@ -50,13 +50,20 @@ mvn clean compile
 mvn exec:java -Dexec.mainClass="com.financeiro.Main"
 ```
 
-Ou compile e execute diretamente:
+Ou compile e execute diretamente (a partir da raiz do projeto):
 ```bash
-cd src/main/java
-javac -d ../../../target/classes com/financeiro/Main.java
-cd ../../../target/classes
-java com.financeiro.Main
+# Limpar classes antigas (opcional, mas recomendado)
+rm -rf target/classes/*   # Linux/Mac
+# ou: Remove-Item -Recurse -Force target/classes/*   # PowerShell
+
+# Compilar
+javac -d target/classes -sourcepath src/main/java src/main/java/com/financeiro/Main.java
+
+# Executar (IMPORTANTE: executar a partir da raiz do projeto)
+java -cp target/classes com.financeiro.Main
 ```
+
+> ⚠️ **Nota:** O sistema utiliza caminhos relativos para carregar os arquivos CSV em `src/main/resources/`. Por isso, é essencial executar o comando `java` a partir do diretório raiz do projeto.
 
 ### Executar testes
 ```bash
