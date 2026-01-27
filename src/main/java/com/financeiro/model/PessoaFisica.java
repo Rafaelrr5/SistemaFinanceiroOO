@@ -5,7 +5,8 @@ import java.time.LocalDate;
 public class PessoaFisica extends Investidor {
     private PerfilInvestidor perfil;
 
-    public PessoaFisica(String nome, String cpf, String telefone, String email, LocalDate dataNascimento, String enderecoCompleto, double patrimonio, PerfilInvestidor perfil) {
+    public PessoaFisica(String nome, String cpf, String telefone, String email, LocalDate dataNascimento,
+            String enderecoCompleto, double patrimonio, PerfilInvestidor perfil) {
         super(nome, cpf, telefone, email, dataNascimento, enderecoCompleto, patrimonio);
         this.perfil = perfil;
     }
@@ -23,25 +24,23 @@ public class PessoaFisica extends Investidor {
      * Regras:
      * - Criptoativos: apenas perfil ARROJADO
      * - Stocks: apenas MODERADO ou ARROJADO
-     * - Ativos qualificados: apenas se investidor é qualificado (patrimônio >= R$1M)
+     * - Ativos qualificados: apenas se investidor é qualificado (patrimônio >=
+     * R$1M)
      */
     @Override
     public boolean podeMovimentar(Ativo ativo) {
-        // Regra ativo qualificado
         if (ativo.isQualificado() && !this.isQualificado()) {
             return false;
         }
-        
-        // Regra criptoativos
+
         if (ativo instanceof Criptoativo) {
             return this.perfil == PerfilInvestidor.ARROJADO;
         }
-        
-        // Regra stocks
+
         if (ativo instanceof Stock) {
             return this.perfil == PerfilInvestidor.MODERADO || this.perfil == PerfilInvestidor.ARROJADO;
         }
-        
+
         return true;
     }
 
@@ -55,12 +54,12 @@ public class PessoaFisica extends Investidor {
             System.out.println("Movimentação não permitida para este perfil de investidor.");
             return false;
         }
-        
+
         if (quantidade <= 0 || preco <= 0) {
             System.out.println("Quantidade e preço devem ser maiores que zero.");
             return false;
         }
-        
+
         getCarteira().adicionarAtivo(ativo, quantidade, preco);
         System.out.println("Investimento cadastrado com sucesso!");
         return true;

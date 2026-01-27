@@ -11,51 +11,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImportacaoMovimentacaoService {
-    
+
     private TransacaoService transacaoService;
     private com.financeiro.repository.AtivoRepository ativoRepository;
-    
-    public ImportacaoMovimentacaoService(TransacaoService transacaoService, com.financeiro.repository.AtivoRepository ativoRepository) {
+
+    public ImportacaoMovimentacaoService(TransacaoService transacaoService,
+            com.financeiro.repository.AtivoRepository ativoRepository) {
         this.transacaoService = transacaoService;
         this.ativoRepository = ativoRepository;
     }
-    
-    // Método para ser usado no Menu (TODO na refatoração)
+
     public void importarLoteMovimentacoes(String caminhoArquivo, com.financeiro.model.Investidor investidor) {
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
             String linha;
             boolean primeira = true;
-            // Layout esperado: TIPO(COMPRA/VENDA);TICKER;QTD;PRECO;INSTITUICAO;DATA(dd/MM/yyyy)
             while ((linha = br.readLine()) != null) {
-                if(primeira) { primeira = false; continue; }
-                if(linha.trim().isEmpty()) continue;
-                
+                if (primeira) {
+                    primeira = false;
+                    continue;
+                }
+                if (linha.trim().isEmpty())
+                    continue;
+
                 String[] dados = linha.split(";");
-                if(dados.length < 5) continue;
-                
+                if (dados.length < 5)
+                    continue;
+
                 try {
                     String tipo = dados[0].trim();
                     String ticker = dados[1].trim();
-                    double qtd = Double.parseDouble(dados[2].replace(",","."));
-                    double preco = Double.parseDouble(dados[3].replace(",","."));
+                    double qtd = Double.parseDouble(dados[2].replace(",", "."));
+                    double preco = Double.parseDouble(dados[3].replace(",", "."));
                     String inst = dados[4].trim();
-                    
+
                     Ativo ativo = ativoRepository.buscarPorTicker(ticker);
-                    if(ativo == null) {
+                    if (ativo == null) {
                         System.out.println("Ativo nao encontrado: " + ticker);
                         continue;
                     }
-                    
-                    if(tipo.equalsIgnoreCase("COMPRA")) {
+
+                    if (tipo.equalsIgnoreCase("COMPRA")) {
                         transacaoService.comprar(investidor, ativo, qtd, preco, inst);
                     } else if (tipo.equalsIgnoreCase("VENDA")) {
                         transacaoService.vender(investidor, ativo, qtd, preco, inst);
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     System.out.println("Erro linha " + linha + ": " + e.getMessage());
                 }
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("Erro arquivo: " + e.getMessage());
         }
     }

@@ -10,8 +10,6 @@ import java.time.LocalDate;
 
 public class Menu {
 
-    // ===== MÉTODOS AUXILIARES DE LEITURA SEGURA =====
-
     /**
      * Lê um inteiro do usuário com tratamento de erro.
      * Continua pedindo até receber um valor válido.
@@ -103,7 +101,6 @@ public class Menu {
     private AtivoService ativoService;
     private ArquivoService arquivoService;
 
-    // Construtor padrão (cria repositórios novos)
     public Menu() {
         this(new AtivoRepository(), new InvestidorRepository());
     }
@@ -601,7 +598,6 @@ public class Menu {
 
     /**
      * Exibe o valor total gasto (quantidade x preço médio de compra) em Real.
-     * Conforme especificação do trabalho.
      */
     private void exibirValorTotalGasto(Carteira c) {
         double custo = c.getAtivos().values().stream()
@@ -612,7 +608,6 @@ public class Menu {
 
     /**
      * Exibe o valor total atual (quantidade x preço atual) em Real.
-     * Conforme especificação do trabalho.
      */
     private void exibirValorTotalAtual(Carteira c) {
         double atual = c.getValorTotalCarteira();
@@ -621,7 +616,6 @@ public class Menu {
 
     /**
      * Exibe as porcentagens de produtos de renda fixa e renda variável.
-     * Conforme especificação do trabalho.
      */
     private void exibirPercentuaisRendaFixaVariavel(Carteira c) {
         Map<String, Double> renda = diversificacaoService.calcularDistribuicaoRendaFixaVariavel(c);
@@ -632,7 +626,6 @@ public class Menu {
 
     /**
      * Exibe as porcentagens de produtos nacionais e internacionais.
-     * Conforme especificação do trabalho.
      */
     private void exibirPercentuaisNacionalInternacional(Carteira c) {
         Map<String, Double> nac = diversificacaoService.calcularDistribuicaoNacionalInternacional(c);

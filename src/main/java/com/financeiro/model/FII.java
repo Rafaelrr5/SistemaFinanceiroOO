@@ -10,15 +10,17 @@ public class FII extends Ativo implements AtivoNacional {
     private double ultimoDividendo;
     private double taxaAdministracao;
 
-    public FII(String ticker, String nome, double preco, String setor, double ultimoDividendo, double taxaAdministracao) {
-        super(ticker, nome, preco, false, 1.0); // FIIs nacionais
+    public FII(String ticker, String nome, double preco, String setor, double ultimoDividendo,
+            double taxaAdministracao) {
+        super(ticker, nome, preco, false, 1.0);
         this.setor = setor;
         this.ultimoDividendo = ultimoDividendo;
         this.taxaAdministracao = taxaAdministracao;
     }
 
-    public FII(String ticker, String nome, double preco, String setor, double ultimoDividendo, double taxaAdministracao, boolean qualificado) {
-        super(ticker, nome, preco, qualificado, 1.0); // FIIs nacionais, com flag qualificado
+    public FII(String ticker, String nome, double preco, String setor, double ultimoDividendo, double taxaAdministracao,
+            boolean qualificado) {
+        super(ticker, nome, preco, qualificado, 1.0);
         this.setor = setor;
         this.ultimoDividendo = ultimoDividendo;
         this.taxaAdministracao = taxaAdministracao;
@@ -26,7 +28,7 @@ public class FII extends Ativo implements AtivoNacional {
 
     @Override
     public double getPrecoEmReais() {
-        return getPreco(); // Já está em reais
+        return getPreco();
     }
 
     public String getSetor() {

@@ -32,25 +32,23 @@ public class ValidacaoService {
 
     public void validarPermissaoInvestimento(Investidor investidor, Ativo ativo) {
         if (investidor instanceof Institucional) {
-            return; // Institucional pode tudo
+            return;
         }
 
         if (investidor instanceof PessoaFisica) {
             PessoaFisica pf = (PessoaFisica) investidor;
 
-            // Regra Ativo Qualificado
             if (ativo.isQualificado() && !pf.isQualificado()) {
                 throw new RegraNegocioException("Ativo restrito a investidores qualificados (Patrimônio > R$ 1MM).");
             }
 
-            // Regra Criptoativos
             if (ativo instanceof Criptoativo) {
                 if (pf.getPerfil() != PerfilInvestidor.ARROJADO) {
-                    throw new RegraNegocioException("Apenas investidores de perfil ARROJADO podem operar Criptoativos.");
+                    throw new RegraNegocioException(
+                            "Apenas investidores de perfil ARROJADO podem operar Criptoativos.");
                 }
             }
 
-            // Regra Stocks
             if (ativo instanceof Stock) {
                 if (pf.getPerfil() == PerfilInvestidor.CONSERVADOR) {
                     throw new RegraNegocioException("Investidores de perfil CONSERVADOR não podem operar Stocks.");

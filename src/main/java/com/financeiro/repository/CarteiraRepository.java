@@ -9,7 +9,6 @@ public class CarteiraRepository {
     private List<Carteira> carteiras = new ArrayList<>();
 
     public void salvar(Carteira carteira) {
-        // Simulating save or update
         if (!carteiras.contains(carteira)) {
             carteiras.add(carteira);
         }

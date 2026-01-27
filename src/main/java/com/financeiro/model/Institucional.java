@@ -5,7 +5,8 @@ import java.time.LocalDate;
 public class Institucional extends Investidor {
     private String razaoSocial;
 
-    public Institucional(String nome, String cnpj, String telefone, String email, LocalDate dataNascimento, String enderecoCompleto, double patrimonio, String razaoSocial) {
+    public Institucional(String nome, String cnpj, String telefone, String email, LocalDate dataNascimento,
+            String enderecoCompleto, double patrimonio, String razaoSocial) {
         super(nome, cnpj, telefone, email, dataNascimento, enderecoCompleto, patrimonio);
         this.razaoSocial = razaoSocial;
     }
@@ -23,7 +24,7 @@ public class Institucional extends Investidor {
      */
     @Override
     public boolean podeMovimentar(Ativo ativo) {
-        return true; // Institucional pode tudo
+        return true;
     }
 
     /**
@@ -36,7 +37,7 @@ public class Institucional extends Investidor {
             System.out.println("Quantidade e preço devem ser maiores que zero.");
             return false;
         }
-        
+
         getCarteira().adicionarAtivo(ativo, quantidade, preco);
         System.out.println("Investimento cadastrado com sucesso!");
         return true;

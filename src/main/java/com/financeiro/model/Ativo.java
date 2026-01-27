@@ -64,7 +64,7 @@ public abstract class Ativo {
      * Sobrescrito nas subclasses quando necessário.
      */
     public boolean isRendaFixa() {
-        return false; // Por padrão, ativos são de renda variável
+        return false;
     }
 
     public boolean isRendaVariavel() {
@@ -76,7 +76,7 @@ public abstract class Ativo {
      * Sobrescrito nas subclasses quando necessário.
      */
     public boolean isNacional() {
-        return this.fatorConversao == 1.0; // Se fator é 1.0, é nacional
+        return this.fatorConversao == 1.0;
     }
 
     public boolean isInternacional() {
@@ -85,8 +85,10 @@ public abstract class Ativo {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Ativo ativo = (Ativo) o;
         return ticker.equals(ativo.ticker);
     }

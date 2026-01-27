@@ -20,7 +20,8 @@ public class AtivoRepository implements Repositorio<Ativo> {
 
     @Override
     public void salvar(Ativo ativo) {
-        if (ativo == null) return;
+        if (ativo == null)
+            return;
         Ativo existente = buscarPorId(ativo.getTicker());
         if (existente != null) {
             ativos.remove(existente);
@@ -43,7 +44,6 @@ public class AtivoRepository implements Repositorio<Ativo> {
         ativos.remove(ativo);
     }
 
-    // Métodos específicos mantidos
     private void carregarAcoes() {
         try (BufferedReader br = new BufferedReader(new FileReader("acao.csv"))) {
             String linha;
@@ -113,23 +113,23 @@ public class AtivoRepository implements Repositorio<Ativo> {
             }
         } catch (IOException e) {
             try (BufferedReader br = new BufferedReader(new FileReader("criptoativo.csv"))) {
-                 String linha;
-                 boolean primeira = true;
-                 while ((linha = br.readLine()) != null) {
-                     if (primeira) {
-                         primeira = false;
-                         continue;
-                     }
-                     String[] dados = linha.split(";");
-                     if (dados.length >= 5) {
-                         String ticker = dados[0].trim();
-                         String nome = dados[1].trim();
-                         double precoUSD = parseDouble(dados[2].replace(",", "."));
-                         String algoritmo = dados[3].trim();
-                         double qtdMaxima = parseDouble(dados[4].replace(",", "."));
-                         ativos.add(new Criptoativo(ticker, nome, precoUSD, algoritmo, qtdMaxima, 5.39));
-                     }
-                 }
+                String linha;
+                boolean primeira = true;
+                while ((linha = br.readLine()) != null) {
+                    if (primeira) {
+                        primeira = false;
+                        continue;
+                    }
+                    String[] dados = linha.split(";");
+                    if (dados.length >= 5) {
+                        String ticker = dados[0].trim();
+                        String nome = dados[1].trim();
+                        double precoUSD = parseDouble(dados[2].replace(",", "."));
+                        String algoritmo = dados[3].trim();
+                        double qtdMaxima = parseDouble(dados[4].replace(",", "."));
+                        ativos.add(new Criptoativo(ticker, nome, precoUSD, algoritmo, qtdMaxima, 5.39));
+                    }
+                }
             } catch (IOException ex) {
                 System.out.println("Erro ao carregar criptoativos: " + e.getMessage());
             }
@@ -156,7 +156,7 @@ public class AtivoRepository implements Repositorio<Ativo> {
                 }
             }
         } catch (IOException e) {
-             try (BufferedReader br = new BufferedReader(new FileReader("stock.csv"))) {
+            try (BufferedReader br = new BufferedReader(new FileReader("stock.csv"))) {
                 String linha;
                 boolean primeira = true;
                 while ((linha = br.readLine()) != null) {
@@ -218,8 +218,7 @@ public class AtivoRepository implements Repositorio<Ativo> {
                 .findFirst()
                 .orElse(null);
     }
-    
-    // Alias para manter compatibilidade ou pode ser removido refatorando quem chama
+
     public void adicionarAtivo(Ativo ativo) {
         salvar(ativo);
     }

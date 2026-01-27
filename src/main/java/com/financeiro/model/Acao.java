@@ -8,20 +8,22 @@ package com.financeiro.model;
 public class Acao extends Ativo implements AtivoNacional {
 
     public Acao(String ticker, String nome, double preco, boolean qualificado) {
-        super(ticker, nome, preco, qualificado, 1.0); // Fator conversão 1.0 para nacionais
+        super(ticker, nome, preco, qualificado, 1.0);
     }
 
     @Override
     public double getPrecoEmReais() {
-        return getPreco(); // Já está em reais
+        return getPreco();
     }
 
     public String getTipoAcao() {
         String ticker = getTicker();
-        // Verificar Unit (11) PRIMEIRO, pois endsWith("1") pegaria ações terminadas em 11
-        if (ticker.endsWith("11")) return "Unit";
-        if (ticker.endsWith("3")) return "Ordinária";
-        if (ticker.endsWith("4") || ticker.endsWith("5") || ticker.endsWith("6")) return "Preferencial";
+        if (ticker.endsWith("11"))
+            return "Unit";
+        if (ticker.endsWith("3"))
+            return "Ordinária";
+        if (ticker.endsWith("4") || ticker.endsWith("5") || ticker.endsWith("6"))
+            return "Preferencial";
         return "Desconhecido";
     }
 

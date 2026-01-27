@@ -27,14 +27,12 @@ public class CarteiraService {
 
     public void adicionarAtivo(Carteira carteira, Ativo ativo, double quantidade, double precoCompra) {
         carteira.adicionarAtivo(ativo, quantidade, precoCompra);
-        // Em um cenário real com banco de dados, chamaria repository.salvar(carteira) para atualizar
     }
 
     public void removerAtivo(Carteira carteira, Ativo ativo, double quantidade) {
         carteira.removerAtivo(ativo, quantidade);
-        // Em um cenário real com banco de dados, chamaria repository.salvar(carteira) para atualizar
     }
-    
+
     public void adicionarSaldo(Carteira carteira, double valor) {
         if (valor > 0) {
             carteira.setSaldo(carteira.getSaldo() + valor);

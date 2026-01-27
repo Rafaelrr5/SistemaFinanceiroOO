@@ -26,7 +26,7 @@ public class ArquivoService {
                 if (primeira) {
                     primeira = false;
                     continue;
-                } // Ignora header
+                }
                 if (linha.trim().isEmpty())
                     continue;
 
@@ -97,7 +97,6 @@ public class ArquivoService {
                     continue;
 
                 try {
-                    // Formato esperado: Ticker;Tipo(C/V);Quantidade;Preco;Instituicao
                     String[] dados = linha.split(";");
                     if (dados.length < 5)
                         continue;
@@ -137,8 +136,6 @@ public class ArquivoService {
             return 0.0;
         }
         String limpo = valor.trim();
-        // Remove pontos de milhar (ex: 1.234,56 -> 1234,56)
-        // Detecta se tem vírgula como decimal: remove pontos antes da vírgula
         if (limpo.contains(",")) {
             limpo = limpo.replace(".", "").replace(",", ".");
         }
@@ -156,7 +153,6 @@ public class ArquivoService {
         return "";
     }
 
-    // Método auxiliar de parsing (simplificado)
     private Ativo parseAcao(String linha) {
         String[] dados = linha.split(";");
         String ticker = getField(dados, 0);
@@ -179,16 +175,14 @@ public class ArquivoService {
 
     private Ativo parseStock(String linha) {
         String[] dados = linha.split(";");
-        // Ticker;Nome;Preco;Bolsa;Setor
         return new Stock(getField(dados, 0), getField(dados, 1),
                 parseNumber(getField(dados, 2)),
-                getField(dados, 3), getField(dados, 4), 5.39); // Fixo 5.39 conforme PDF
+                getField(dados, 3), getField(dados, 4), 5.39);
     }
 
     private Ativo parseCripto(String linha) {
         String[] dados = linha.split(";");
-        // Ticker;Nome;Preco;Algoritmo;QtdMax (QtdMax pode estar ausente)
-        double qtdMax = dados.length > 4 ? parseNumber(getField(dados, 4)) : 21000000.0; // Default: supply do Bitcoin
+        double qtdMax = dados.length > 4 ? parseNumber(getField(dados, 4)) : 21000000.0;
         return new Criptoativo(getField(dados, 0), getField(dados, 1),
                 parseNumber(getField(dados, 2)),
                 getField(dados, 3), qtdMax, 5.39);
@@ -196,7 +190,6 @@ public class ArquivoService {
 
     private Ativo parseTesouro(String linha) {
         String[] dados = linha.split(";");
-        // Ticker;Nome;Preco;Tipo;Vencimento
         return new Tesouro(getField(dados, 0), getField(dados, 1),
                 parseNumber(getField(dados, 2)),
                 getField(dados, 3), getField(dados, 4));
@@ -204,7 +197,6 @@ public class ArquivoService {
 
     private Investidor parseInvestidor(String linha) {
         String[] dados = linha.split(";");
-        // TIPO;NOME;IDENTIFICADOR;TELEFONE;EMAIL;ENDERECO;PATRIMONIO;PERFIL_OU_RAZAO
         if (dados.length < 8)
             return null;
 
@@ -215,7 +207,7 @@ public class ArquivoService {
         String email = dados[4].trim();
         String endereco = dados[5].trim();
         double patrimonio = Double.parseDouble(dados[6].replace(",", "."));
-        String extra = dados[7].trim(); // Perfil ou RazaoSocial
+        String extra = dados[7].trim();
 
         if (tipo.equalsIgnoreCase("PF")) {
             PerfilInvestidor perfil = PerfilInvestidor.valueOf(extra.toUpperCase());

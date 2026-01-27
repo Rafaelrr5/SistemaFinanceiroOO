@@ -23,19 +23,19 @@ public class TransacaoService {
      * Valida permissões de perfil antes de executar.
      * A compra adiciona o ativo à carteira e registra a transação.
      */
-    public void comprar(Investidor investidor, Ativo ativo, double quantidade, double preco, String instituicao) throws Exception {
+    public void comprar(Investidor investidor, Ativo ativo, double quantidade, double preco, String instituicao)
+            throws Exception {
         validacaoService.validarQuantidadePositiva(quantidade);
         validacaoService.validarPrecoPositivo(preco);
         validacaoService.validarPermissaoInvestimento(investidor, ativo);
-        
+
         Carteira carteira = investidor.getCarteira();
-        
-        // Adiciona o ativo à carteira (compra)
+
         carteira.adicionarAtivo(ativo, quantidade, preco);
 
-        // Registra a transação
         String id = java.util.UUID.randomUUID().toString();
-        Transacao transacao = new Transacao(id, TipoTransacao.COMPRA, LocalDateTime.now(), ativo, quantidade, preco, instituicao);
+        Transacao transacao = new Transacao(id, TipoTransacao.COMPRA, LocalDateTime.now(), ativo, quantidade, preco,
+                instituicao);
         repository.salvar(transacao);
     }
 
@@ -44,21 +44,20 @@ public class TransacaoService {
      * Valida quantidade disponível antes de executar.
      * A venda não pode exceder a quantidade que o investidor possui.
      */
-    public void vender(Investidor investidor, Ativo ativo, double quantidade, double preco, String instituicao) throws Exception {
+    public void vender(Investidor investidor, Ativo ativo, double quantidade, double preco, String instituicao)
+            throws Exception {
         validacaoService.validarQuantidadePositiva(quantidade);
         validacaoService.validarPrecoPositivo(preco);
         Carteira carteira = investidor.getCarteira();
         validacaoService.validarQuantidadeAtivo(carteira, ativo, quantidade);
 
-        // Validação de permissão também para venda (conforme PDF: "movimentação" inclui compra e venda)
         validacaoService.validarPermissaoInvestimento(investidor, ativo);
 
-        // Remove o ativo da carteira (venda)
         carteira.removerAtivo(ativo, quantidade);
 
-        // Registra a transação
         String id = java.util.UUID.randomUUID().toString();
-        Transacao transacao = new Transacao(id, TipoTransacao.VENDA, LocalDateTime.now(), ativo, quantidade, preco, instituicao);
+        Transacao transacao = new Transacao(id, TipoTransacao.VENDA, LocalDateTime.now(), ativo, quantidade, preco,
+                instituicao);
         repository.salvar(transacao);
     }
 

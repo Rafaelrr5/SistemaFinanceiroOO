@@ -4,20 +4,19 @@ import java.time.LocalDate;
 
 /**
  * Classe abstrata que representa um investidor.
- * Implementa a interface Investimento conforme especificação:
- * "Todo investidor obrigatoriamente deve possuir a capacidade de cadastrar investimento."
  */
 public abstract class Investidor implements Investimento {
     private String nome;
-    private String identificador; // CPF ou CNPJ
+    private String identificador;
     private String telefone;
     private String email;
     private LocalDate dataNascimento;
-    private String enderecoCompleto; // Simplificado
+    private String enderecoCompleto;
     private double patrimonio;
     private Carteira carteira;
 
-    public Investidor(String nome, String identificador, String telefone, String email, LocalDate dataNascimento, String enderecoCompleto, double patrimonio) {
+    public Investidor(String nome, String identificador, String telefone, String email, LocalDate dataNascimento,
+            String enderecoCompleto, double patrimonio) {
         this.nome = nome;
         this.identificador = identificador;
         this.telefone = telefone;
@@ -59,7 +58,7 @@ public abstract class Investidor implements Investimento {
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     public LocalDate getDataNascimento() {
         return dataNascimento;
     }
@@ -97,18 +96,17 @@ public abstract class Investidor implements Investimento {
     }
 
     /**
-     * Método obrigatório: Cadastra investimento (compra) na carteira do investidor.
-     * Conforme especificação, todo investidor deve ter capacidade de cadastrar investimento.
-     * @param ativo O ativo a ser adquirido
+     * Cadastra investimento (compra) na carteira do investidor.
+     * 
+     * @param ativo      O ativo a ser adquirido
      * @param quantidade Quantidade do ativo
-     * @param preco Preço de compra
-     * @return true se a operação foi bem sucedida, false caso contrário
+     * @param preco      Preço de compra
+     * @return true se a operação foi bem sucedida
      */
     public abstract boolean cadastrarInvestimento(Ativo ativo, double quantidade, double preco);
 
     /**
      * Verifica se o investidor pode movimentar determinado tipo de ativo.
-     * Implementado nas subclasses conforme regras de negócio.
      */
     public abstract boolean podeMovimentar(Ativo ativo);
 

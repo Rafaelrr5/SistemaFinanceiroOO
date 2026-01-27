@@ -10,17 +10,14 @@ public class Criptoativo extends Ativo implements AtivoInternacional {
     private double quantidadeMaxima;
     private String moedaOriginal;
 
-    public Criptoativo(String ticker, String nome, double preco, String algoritmoConsenso, double quantidadeMaxima, double fatorConversao) {
-        super(ticker, nome, preco, false, fatorConversao); // Cripto internacional
+    public Criptoativo(String ticker, String nome, double preco, String algoritmoConsenso, double quantidadeMaxima,
+            double fatorConversao) {
+        super(ticker, nome, preco, false, fatorConversao);
         this.algoritmoConsenso = algoritmoConsenso;
         this.quantidadeMaxima = quantidadeMaxima;
-        this.moedaOriginal = "USD"; // Padrão USD
+        this.moedaOriginal = "USD";
     }
 
-    /**
-     * Método OBRIGATÓRIO conforme especificação:
-     * "Ativos internacionais devem obrigatoriamente ter um método para converter a moeda do ativo em reais."
-     */
     @Override
     public double converterParaReais() {
         return getPreco() * getFatorConversao();
@@ -49,7 +46,7 @@ public class Criptoativo extends Ativo implements AtivoInternacional {
 
     @Override
     public boolean isNacional() {
-        return false; // Criptoativos são internacionais
+        return false;
     }
 
     @Override

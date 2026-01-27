@@ -25,21 +25,14 @@ public class AtivoService {
         }
         ativoRepository.salvar(ativo);
     }
-    
+
     public void editar(Ativo ativoNovo) throws Exception {
         Ativo existente = ativoRepository.buscarPorId(ativoNovo.getTicker());
         if (existente == null) {
             throw new Exception("Ativo não encontrado para edição.");
         }
-        // Atualiza mantendo o mesmo objeto ou substitui no repo
-        // Como o repo usa List e remove/add, substituir funciona.
         cadastrar(ativoNovo);
-        
-        // Se quiséssemos propagar alterações de nome/preço para carteiras (embora carteira referencie objeto),
-        // se substituirmos o objeto no repo, as carteiras ainda apontam pro objeto ANTIGO se não atualizarmos.
-        // O ideal é atualizar os campos do objeto existente ou atualizar referências.
-        // Dado o escopo, atualizar campos seria melhor, mas Ativo tem subclasses.
-        // Vamos varrer investidores e atualizar referências.
+
         atualizarReferenciaEmCarteiras(existente.getTicker(), ativoNovo);
     }
 
@@ -60,12 +53,11 @@ public class AtivoService {
             }
         }
     }
-    
+
     private void atualizarReferenciaEmCarteiras(String tickerAntigo, Ativo novoAtivo) {
         List<Investidor> investidores = investidorRepository.listarTodos();
         for (Investidor inv : investidores) {
             Carteira carteira = inv.getCarteira();
-            // Precisamos procurar pela chave (Ativo) com aquele ticker
             Ativo chaveEncontrada = null;
             for (Ativo a : carteira.getAtivos().keySet()) {
                 if (a.getTicker().equals(tickerAntigo)) {
@@ -73,11 +65,11 @@ public class AtivoService {
                     break;
                 }
             }
-            
+
             if (chaveEncontrada != null) {
                 var item = carteira.getAtivos().remove(chaveEncontrada);
-                item.setAtivo(novoAtivo); // Atualiza item
-                carteira.getAtivos().put(novoAtivo, item); // Recoloca com nova chave
+                item.setAtivo(novoAtivo);
+                carteira.getAtivos().put(novoAtivo, item);
             }
         }
     }

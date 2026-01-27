@@ -10,14 +10,14 @@ public class Tesouro extends Ativo implements AtivoNacional {
     private String vencimento;
 
     public Tesouro(String ticker, String nome, double preco, String tipoRendimento, String vencimento) {
-        super(ticker, nome, preco, false, 1.0); // Tesouro não qualificado, nacional
+        super(ticker, nome, preco, false, 1.0);
         this.tipoRendimento = tipoRendimento;
         this.vencimento = vencimento;
     }
 
     @Override
     public double getPrecoEmReais() {
-        return getPreco(); // Já está em reais
+        return getPreco();
     }
 
     public String getTipoRendimento() {
@@ -38,12 +38,12 @@ public class Tesouro extends Ativo implements AtivoNacional {
 
     @Override
     public boolean isRendaFixa() {
-        return true; // Tesouro é renda fixa
+        return true;
     }
 
     @Override
     public boolean isNacional() {
-        return true; // Tesouro é nacional
+        return true;
     }
 
     @Override

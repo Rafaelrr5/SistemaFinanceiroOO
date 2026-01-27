@@ -11,7 +11,6 @@ public class InvestidorRepository implements Repositorio<Investidor> {
 
     @Override
     public void salvar(Investidor investidor) {
-        // Se já existe (pelo ID), atualiza (remove e adiciona)
         Investidor existente = buscarPorId(investidor.getIdentificador());
         if (existente != null) {
             investidores.remove(existente);
@@ -36,8 +35,7 @@ public class InvestidorRepository implements Repositorio<Investidor> {
     public void excluir(Investidor investidor) {
         investidores.remove(investidor);
     }
-    
-    // Método extra para exlcuir por ID
+
     public boolean excluirPorId(String identificador) {
         Investidor inv = buscarPorId(identificador);
         if (inv != null) {

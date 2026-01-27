@@ -54,18 +54,17 @@ public class Carteira {
             ItemCarteira item = ativos.get(ativo);
             double qtdAntiga = item.getQuantidade();
             double precoMedioAntigo = item.getPrecoMedioCompra();
-            
-            // Novo Preço Médio = ((QtdAntiga * PrecoMedioAntigo) + (QtdNova * PrecoCompra)) / (QtdTotal)
+
             double novoTotalQuantidade = qtdAntiga + quantidade;
             double novoPrecoMedio = ((qtdAntiga * precoMedioAntigo) + (quantidade * precoCompra)) / novoTotalQuantidade;
-            
+
             item.setQuantidade(novoTotalQuantidade);
             item.setPrecoMedioCompra(novoPrecoMedio);
         } else {
             ativos.put(ativo, new ItemCarteira(ativo, quantidade, precoCompra));
         }
     }
-    
+
     public void removerAtivo(Ativo ativo, double quantidade) {
         if (this.ativos.containsKey(ativo)) {
             ItemCarteira item = this.ativos.get(ativo);
